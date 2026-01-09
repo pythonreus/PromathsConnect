@@ -1,0 +1,4 @@
+# not pushing environment variables to github
+.env 
+# not pushing node modules folder to github
+node_modules

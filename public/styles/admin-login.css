@@ -1,0 +1,101 @@
+ 
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #7c3aed 100%);
+            min-height: 100vh;
+        }
+        
+        .login-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+        }
+        
+        .input-field {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .input-field:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+            outline: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.4);
+        }
+        
+        .google-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .google-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.3);
+        }
+        
+        .divider:not(:empty)::before {
+            margin-right: 15px;
+        }
+        
+        .divider:not(:empty)::after {
+            margin-left: 15px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #7c3aed 0%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .checkmark {
+            color: #10b981;
+        }
+        
+        .error-icon {
+            color: #ef4444;
+        }
+   

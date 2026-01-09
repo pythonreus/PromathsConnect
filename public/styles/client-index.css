@@ -1,0 +1,244 @@
+@keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-25px) rotate(5deg); }
+        }
+
+        @keyframes gradient-flow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .gradient-bg {
+            background: linear-gradient(-45deg, #0f172a, #1e3a8a, #7c3aed, #ff6b6b);
+            background-size: 400% 400%;
+            animation: gradient-flow 15s ease infinite;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #7c3aed, #38bdf8, #10b981);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 200% auto;
+            animation: gradientX 3s ease infinite;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.5), transparent);
+        }
+
+        .card-3d {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .card-content {
+            transform: translateZ(30px);
+        }
+
+        .card-hover-effect {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-hover-effect::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .card-hover-effect:hover::before {
+            left: 100%;
+        }
+
+        .floating-element {
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(2) {
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            animation-delay: 4s;
+        }
+
+        .hexagon {
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .speech-bubble {
+            position: relative;
+            border-radius: 20px;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50px;
+            border-width: 15px 15px 0;
+            border-style: solid;
+            border-color: #ffffff transparent transparent;
+        }
+
+        .stagger-animate > * {
+            opacity: 0;
+            animation: slideUp 0.7s ease-out forwards;
+        }
+
+        .typewriter {
+            overflow: hidden;
+            border-right: .15em solid #7c3aed;
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #7c3aed }
+        }
+
+        .form-field {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .form-field:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+
+        .glow-effect {
+            filter: drop-shadow(0 0 20px rgba(124, 58, 237, 0.4));
+        }
+
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #7c3aed, #38bdf8);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #7c3aed;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1.5rem;
+            width: 2px;
+            height: calc(100% - 1rem);
+            background: linear-gradient(to bottom, #7c3aed, transparent);
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .expectation-card {
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .expectation-card:hover {
+            transform: translateX(10px);
+        }
+
+        /* Video Section Styles */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            background: #000;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(124, 58, 237, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .play-overlay:hover {
+            background: rgba(124, 58, 237, 1);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .play-overlay i {
+            color: white;
+            font-size: 2rem;
+            margin-left: 5px;
+        }

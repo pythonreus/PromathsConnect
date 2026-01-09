@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promaths Mentorship Bridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'midnight': '#0f172a',
+                        'royal': '#1e3a8a',
+                        'violet': '#7c3aed',
+                        'coral': '#ff6b6b',
+                        'sunset': '#f59e0b',
+                        'mint': '#10b981',
+                        'lavender': '#a78bfa',
+                        'sky': '#38bdf8',
+                        'slate': '#1e293b',
+                    },
+                    animation: {
+                        'orbit': 'orbit 20s linear infinite',
+                        'float': 'float 8s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-up': 'slideUp 0.7s ease-out forwards',
+                        'slide-right': 'slideRight 0.7s ease-out forwards',
+                        'card-hover': 'cardHover 0.3s ease-out forwards',
+                        'card-unhover': 'cardUnhover 0.3s ease-out forwards',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'gradient-x': 'gradientX 3s ease infinite',
+                    },
+                    keyframes: {
+                        orbit: {
+                            '0%': { transform: 'rotate(0deg) translateX(200px) rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg) translateX(200px) rotate(-360deg)' }
+                        },
+                        slideUp: {
+                            'from': { opacity: '0', transform: 'translateY(30px)' },
+                            'to': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideRight: {
+                            'from': { opacity: '0', transform: 'translateX(-30px)' },
+                            'to': { opacity: '1', transform: 'translateX(0)' }
+                        },
+                        cardHover: {
+                            '0%': { transform: 'scale(1) rotate(0deg)' },
+                            '100%': { transform: 'scale(1.05) rotate(1deg)' }
+                        },
+                        cardUnhover: {
+                            '0%': { transform: 'scale(1.05) rotate(1deg)' },
+                            '100%': { transform: 'scale(1) rotate(0deg)' }
+                        },
+                        fadeIn: {
+                            'from': { opacity: '0' },
+                            'to': { opacity: '1' }
+                        },
+                        gradientX: {
+                            '0%, 100%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+   <link rel="stylesheet" href="../../styles/client-index.css">
+</head>
+<body class="bg-gradient-to-br from-midnight via-slate to-royal min-h-screen overflow-x-hidden">
+    <!-- Animated Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-violet/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-coral/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-3/4 left-3/4 w-48 h-48 bg-sky/10 rounded-full blur-3xl"></div>
+        
+        <!-- Floating Shapes -->
+        <div class="floating-element absolute top-20 left-10 w-12 h-12 bg-gradient-to-br from-violet to-sky rounded-2xl rotate-12 opacity-30"></div>
+        <div class="floating-element absolute top-40 right-20 w-16 h-16 bg-gradient-to-br from-coral to-sunset rounded-full opacity-30"></div>
+        <div class="floating-element absolute bottom-40 left-20 w-20 h-20 bg-gradient-to-br from-mint to-sky hexagon opacity-30"></div>
+    </div>
+
+    <!-- Fixed Responsive Header -->
+    <header class="relative z-50 backdrop-blur-md bg-midnight/80 border-b border-white/10 sticky top-0">
+        <div class="container mx-auto px-4 sm:px-6 py-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo/Brand on Left -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-violet to-sky rounded-xl flex items-center justify-center glow-effect animate-pulse-slow">
+                        <i class="fas fa-bridge text-white text-lg sm:text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-white">Promaths<span class="gradient-text">Bridge</span></h1>
+                        <p class="text-sky/80 text-xs sm:text-sm">Senior to First-Year Mentorship</p>
+                    </div>
+                </div>
+                
+                <!-- Apply Button -->
+                <div class="flex items-center">
+                    <button id="applyBtn" class="bg-gradient-to-r from-violet to-sky hover:from-sky hover:to-violet text-white font-semibold py-2 px-4 sm:py-3 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg text-sm sm:text-base whitespace-nowrap">
+                        <i class="fas fa-handshake mr-1 sm:mr-2"></i>Become a Mentor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative pt-20 pb-24 overflow-hidden">
+        <div class="container mx-auto px-4 sm:px-6 relative z-10">
+            <div class="text-center max-w-4xl mx-auto animate-slide-up">
+                <div class="inline-flex items-center space-x-3 bg-white/5 backdrop-blur-sm rounded-full px-4 sm:px-6 py-2 sm:py-3 mb-6">
+                    <span class="w-2 h-2 bg-mint rounded-full animate-pulse"></span>
+                    <span class="text-mint font-medium text-sm sm:text-base">Mentorship Program 2026</span>
+                </div>
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6">
+                    Building Bridges in
+                    <span class="gradient-text">Promaths</span>
+                    Community
+                </h1>
+                <p class="text-lg sm:text-xl text-white/70 mb-8 sm:mb-10 leading-relaxed max-w-3xl mx-auto">
+                    Connect experienced seniors with first-year students through our structured mentorship program. 
+                    Share knowledge, build relationships, and strengthen our academic community.
+                </p>
+                <div class="flex flex-wrap justify-center gap-3 sm:gap-4">
+                    <button class="bg-gradient-to-r from-violet to-sky hover:from-sky hover:to-violet text-white font-bold py-3 px-6 sm:py-4 sm:px-8 rounded-xl text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-user-plus mr-2"></i>Join as Mentee
+                    </button>
+                    <a href="#video" class="bg-white/10 hover:bg-white/15 text-white font-bold py-3 px-6 sm:py-4 sm:px-8 rounded-xl text-base sm:text-lg transition-all duration-300 border border-white/10 group">
+                        <i class="fas fa-play-circle mr-2 group-hover:text-sky"></i>Watch Intro
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section id="video" class="relative py-16 sm:py-20">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="relative card-hover-effect bg-gradient-to-br from-midnight to-royal rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10">
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3 sm:mb-4">Program Introduction</h2>
+                        <p class="text-white/60 text-sm sm:text-base">Learn how PromathsBridge connects seniors with first-year students</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="video-wrapper">
+                            <!-- YouTube Video Embed -->
+                            <iframe 
+                                id="youtubeVideo"
+                                src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" 
+                                title="Promaths Mentorship Bridge Program Introduction" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <p class="text-white/60 text-sm sm:text-base">
+                            This video explains how our mentorship program works and what's expected from mentors.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="about" class="relative py-16 sm:py-20">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="text-center mb-12 sm:mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">How <span class="gradient-text">PromathsBridge</span> Works</h2>
+                <p class="text-lg sm:text-xl text-white/70 max-w-3xl mx-auto">A structured approach to mentorship that benefits both seniors and first-year students</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6 sm:gap-8 mb-16 sm:mb-20 stagger-animate">
+                <!-- Feature 1 -->
+                <div class="group relative card-3d">
+                    <div class="absolute -inset-2 bg-gradient-to-r from-violet to-sky rounded-2xl blur-lg opacity-0 group-hover:opacity-70 transition duration-500"></div>
+                    <div class="relative card-hover-effect bg-gradient-to-br from-midnight to-royal rounded-2xl p-6 sm:p-8 h-full border border-white/10 hover:border-violet/30 transition-all duration-300">
+                        <div class="card-content">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-violet to-sky rounded-xl flex items-center justify-center mb-4 sm:mb-6">
+                                <i class="fas fa-user-friends text-white text-xl sm:text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Smart Matching</h3>
+                            <p class="text-white/60 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
+                                Our algorithm pairs mentors and mentees based on academic interests, personality traits, and availability for optimal compatibility.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="group relative card-3d">
+                    <div class="absolute -inset-2 bg-gradient-to-r from-coral to-sunset rounded-2xl blur-lg opacity-0 group-hover:opacity-70 transition duration-500"></div>
+                    <div class="relative card-hover-effect bg-gradient-to-br from-midnight to-royal rounded-2xl p-6 sm:p-8 h-full border border-white/10 hover:border-coral/30 transition-all duration-300">
+                        <div class="card-content">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-coral to-sunset rounded-xl flex items-center justify-center mb-4 sm:mb-6">
+                                <i class="fas fa-calendar-check text-white text-xl sm:text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Structured Program</h3>
+                            <p class="text-white/60 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
+                                A clear 12-week program with weekly checkpoints, resources, and activities to guide the mentorship relationship.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="group relative card-3d">
+                    <div class="absolute -inset-2 bg-gradient-to-r from-mint to-sky rounded-2xl blur-lg opacity-0 group-hover:opacity-70 transition duration-500"></div>
+                    <div class="relative card-hover-effect bg-gradient-to-br from-midnight to-royal rounded-2xl p-6 sm:p-8 h-full border border-white/10 hover:border-mint/30 transition-all duration-300">
+                        <div class="card-content">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-mint to-sky rounded-xl flex items-center justify-center mb-4 sm:mb-6">
+                                <i class="fas fa-trophy text-white text-xl sm:text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Community Building</h3>
+                            <p class="text-white/60 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
+                                Regular community events, workshops, and networking opportunities to strengthen connections across the Promaths community.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mentor Expectations Section -->
+    <section id="expectations" class="relative py-16 sm:py-20 bg-gradient-to-b from-transparent to-midnight/50">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="text-center mb-12 sm:mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Mentor <span class="gradient-text">Expectations</span></h2>
+                <p class="text-lg sm:text-xl text-white/70">Clear guidelines for our PromathsBridge mentors</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-8 sm:gap-12 mb-12 sm:mb-16">
+                <div>
+                    <div class="mb-8">
+                        <h3 class="text-2xl sm:text-3xl font-bold text-white mb-6">Your Role as a Mentor</h3>
+                        <p class="text-white/60 text-sm sm:text-base mb-6">
+                            As a PromathsBridge mentor, your primary responsibility is to guide first-year students through their transition to university life. You are not expected to be an academic tutor, but rather a supportive peer who can share experiences and provide guidance.
+                        </p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Expectation 1 -->
+                        <div class="expectation-card bg-gradient-to-br from-midnight/60 to-slate/60 p-6 rounded-xl border-l-4 border-violet">
+                            <div class="flex items-start mb-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-violet to-sky rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-file-alt text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold text-lg mb-1">Regular Check-ins & Reports</h4>
+                                    <p class="text-white/60 text-sm sm:text-base">
+                                        Submit brief monthly reports about your mentorship sessions and check-ins with your mentee.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expectation 2 -->
+                        <div class="expectation-card bg-gradient-to-br from-midnight/60 to-slate/60 p-6 rounded-xl border-l-4 border-mint">
+                            <div class="flex items-start mb-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-mint to-sky rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-life-ring text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold text-lg mb-1">Transition Support Focus</h4>
+                                    <p class="text-white/60 text-sm sm:text-base">
+                                        Help first-years adapt to university life - campus navigation, time management, resource awareness, and social integration.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expectation 3 -->
+                        <div class="expectation-card bg-gradient-to-br from-midnight/60 to-slate/60 p-6 rounded-xl border-l-4 border-sky">
+                            <div class="flex items-start mb-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-sky to-violet rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-graduation-cap text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold text-lg mb-1">Academic Guidance (Optional)</h4>
+                                    <p class="text-white/60 text-sm sm:text-base">
+                                        While not required, you may offer study tips and course advice if you feel comfortable. Academic tutoring is NOT a prerequisite.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expectation 4 -->
+                        <div class="expectation-card bg-gradient-to-br from-midnight/60 to-slate/60 p-6 rounded-xl border-l-4 border-coral">
+                            <div class="flex items-start mb-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-coral to-sunset rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-handshake text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold text-lg mb-1">Guidance & Encouragement</h4>
+                                    <p class="text-white/60 text-sm sm:text-base">
+                                        Provide emotional support, share personal experiences, and encourage mentees to make the most of their university journey.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="card-hover-effect bg-gradient-to-br from-midnight to-royal rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10 h-full">
+                        <div class="flex items-center mb-4 sm:mb-6">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-violet to-sky rounded-xl flex items-center justify-center">
+                                <i class="fas fa-lightbulb text-white"></i>
+                            </div>
+                            <div class="ml-3 sm:ml-4">
+                                <h3 class="text-xl sm:text-2xl font-bold text-white">Key Points to Remember</h3>
+                                <p class="text-white/60 text-sm sm:text-base">What makes a great mentor</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4 sm:space-y-6 mb-6 sm:mb-8">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-6 h-6 bg-violet/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                    <i class="fas fa-check text-violet text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-white font-medium">You're a guide, not a tutor</p>
+                                    <p class="text-white/60 text-sm">Focus on transition support rather than academic instruction</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3">
+                                <div class="w-6 h-6 bg-mint/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                    <i class="fas fa-check text-mint text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-white font-medium">Regular communication</p>
+                                    <p class="text-white/60 text-sm">Monthly check-ins and reports help track progress</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3">
+                                <div class="w-6 h-6 bg-sky/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                    <i class="fas fa-check text-sky text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-white font-medium">Share experiences, not answers</p>
+                                    <p class="text-white/60 text-sm">Your journey through university is your most valuable asset</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3">
+                                <div class="w-6 h-6 bg-coral/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                    <i class="fas fa-check text-coral text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-white font-medium">Build confidence</p>
+                                    <p class="text-white/60 text-sm">Help mentees develop independence and university life skills</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-divider my-4 sm:my-6"></div>
+                        
+                        <div class="text-center">
+                            <p class="text-white/60 text-sm sm:text-base mb-4 sm:mb-6">
+                                Ready to make a difference in a first-year student's university journey?
+                            </p>
+                            <button id="applyBtn2" class="w-full bg-gradient-to-r from-violet to-sky hover:from-sky hover:to-violet text-white font-bold py-3 px-6 sm:py-4 sm:px-6 rounded-xl text-base sm:text-lg transition-all duration-300 transform hover:scale-[1.02]">
+                                <i class="fas fa-user-check mr-2"></i>Apply as Mentor
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mentorship Journey Section -->
+    <section id="process" class="relative py-16 sm:py-20">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="text-center mb-12 sm:mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Mentorship <span class="gradient-text">Journey</span></h2>
+                <p class="text-lg sm:text-xl text-white/70">A detailed look at the 12-week mentorship program</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-8 sm:gap-12 items-start">
+                <div>
+                    <h3 class="text-2xl sm:text-3xl font-bold text-white mb-6">Program Timeline & Details</h3>
+                    
+                    <div class="space-y-6 sm:space-y-8">
+                        <!-- Phase 1 -->
+                        <div class="timeline-item">
+                            <div class="flex items-center mb-2">
+                                <div class="w-6 h-6 bg-gradient-to-br from-violet to-sky rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-white text-sm font-bold">1</span>
+                                </div>
+                                <h4 class="text-lg sm:text-xl font-bold text-white">Weeks 1-4: Connection Phase</h4>
+                            </div>
+                            <div class="ml-9">
+                                <p class="text-white/60 text-sm sm:text-base mb-3">
+                                    <strong>Focus:</strong> Building rapport and understanding the mentee's needs
+                                </p>
+                                <ul class="text-white/60 text-sm sm:text-base space-y-2 ml-4">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-violet text-xs mr-2 mt-1.5"></i>
+                                        Initial introduction and goal-setting sessions
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-violet text-xs mr-2 mt-1.5"></i>
+                                        Campus orientation and resource sharing
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-violet text-xs mr-2 mt-1.5"></i>
+                                        <span><strong>Mentor Responsibility:</strong> Submit initial connection report after first meeting</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Phase 2 -->
+                        <div class="timeline-item">
+                            <div class="flex items-center mb-2">
+                                <div class="w-6 h-6 bg-gradient-to-br from-mint to-sky rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-white text-sm font-bold">2</span>
+                                </div>
+                                <h4 class="text-lg sm:text-xl font-bold text-white">Weeks 5-8: Guidance Phase</h4>
+                            </div>
+                            <div class="ml-9">
+                                <p class="text-white/60 text-sm sm:text-base mb-3">
+                                    <strong>Focus:</strong> Practical support for university transition
+                                </p>
+                                <ul class="text-white/60 text-sm sm:text-base space-y-2 ml-4">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-mint text-xs mr-2 mt-1.5"></i>
+                                        Time management and study habit discussions
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-mint text-xs mr-2 mt-1.5"></i>
+                                        Social integration and campus activity guidance
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-mint text-xs mr-2 mt-1.5"></i>
+                                        <span><strong>Important:</strong> Academic help is optional - focus on transition support</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-mint text-xs mr-2 mt-1.5"></i>
+                                        <span><strong>Mentor Responsibility:</strong> Submit bi-weekly progress reports</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Phase 3 -->
+                        <div class="timeline-item">
+                            <div class="flex items-center mb-2">
+                                <div class="w-6 h-6 bg-gradient-to-br from-coral to-sunset rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-white text-sm font-bold">3</span>
+                                </div>
+                                <h4 class="text-lg sm:text-xl font-bold text-white">Weeks 9-12: Independence Phase</h4>
+                            </div>
+                            <div class="ml-9">
+                                <p class="text-white/60 text-sm sm:text-base mb-3">
+                                    <strong>Focus:</strong> Fostering independence and closure
+                                </p>
+                                <ul class="text-white/60 text-sm sm:text-base space-y-2 ml-4">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-coral text-xs mr-2 mt-1.5"></i>
+                                        Encourage independent problem-solving
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-coral text-xs mr-2 mt-1.5"></i>
+                                        Review progress and celebrate achievements
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-coral text-xs mr-2 mt-1.5"></i>
+                                        Plan for continued self-guided growth
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-circle text-coral text-xs mr-2 mt-1.5"></i>
+                                        <span><strong>Mentor Responsibility:</strong> Submit final comprehensive report</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="card-hover-effect bg-gradient-to-br from-midnight to-royal rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10">
+                        <div class="flex items-center mb-4 sm:mb-6">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-sunset to-coral rounded-xl flex items-center justify-center">
+                                <i class="fas fa-clipboard-check text-white"></i>
+                            </div>
+                            <div class="ml-3 sm:ml-4">
+                                <h3 class="text-xl sm:text-2xl font-bold text-white">Reporting Requirements</h3>
+                                <p class="text-white/60 text-sm sm:text-base">Simple, structured feedback system</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4 sm:space-y-6">
+                            <div class="p-4 bg-white/5 rounded-xl">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-white font-bold">Monthly Check-in Reports</h4>
+                                    <span class="text-violet text-sm font-bold">Required</span>
+                                </div>
+                                <p class="text-white/60 text-sm">
+                                    Brief reports documenting your monthly meetings with mentees (15-20 minutes to complete)
+                                </p>
+                            </div>
+                            
+                            <div class="p-4 bg-white/5 rounded-xl">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-white font-bold">Progress Updates</h4>
+                                    <span class="text-mint text-sm font-bold">Bi-weekly</span>
+                                </div>
+                                <p class="text-white/60 text-sm">
+                                    Short updates on mentee's adaptation progress and any challenges faced
+                                </p>
+                            </div>
+                            
+                            <div class="p-4 bg-white/5 rounded-xl">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-white font-bold">Final Program Report</h4>
+                                    <span class="text-coral text-sm font-bold">End of Program</span>
+                                </div>
+                                <p class="text-white/60 text-sm">
+                                    Comprehensive summary of the mentorship journey and recommendations
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 sm:mt-8 p-4 sm:p-6 bg-gradient-to-r from-violet/20 to-sky/20 rounded-xl">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-exclamation-triangle text-sunset"></i>
+                                </div>
+                                <div>
+                                    <p class="text-white font-medium text-sm sm:text-base">Remember: Your value is in your experience, not your academic expertise</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="relative py-16 sm:py-20 bg-gradient-to-b from-transparent to-midnight/50">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="text-center mb-12 sm:mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Success <span class="gradient-text">Stories</span></h2>
+                <p class="text-lg sm:text-xl text-white/70">Hear from our mentors and mentees</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <!-- Testimonial 1 -->
+                <div class="card-hover-effect bg-gradient-to-br from-midnight to-royal rounded-2xl p-6 sm:p-8 border border-white/10">
+                    <div class="flex items-center mb-4 sm:mb-6">
+                        <div class="w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-violet to-sky rounded-full"></div>
+                        <div class="ml-3 sm:ml-4">
+                            <h4 class="text-white font-bold text-sm sm:text-base">Alex Johnson</h4>
+                            <p class="text-white/60 text-xs sm:text-sm">Senior Mentor, Computer Science</p>
+                        </div>
+                    </div>
+                    <p class="text-white/60 italic mb-4 sm:mb-6 text-sm sm:text-base">"I focused on helping my mentee navigate campus life and time management. The monthly reports kept me organized and the structure was perfect for guiding without overwhelming."</p>
+                    <div class="flex text-sunset text-sm sm:text-base">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="card-hover-effect bg-gradient-to-br from-midnight to-royal rounded-2xl p-6 sm:p-8 border border-white/10">
+                    <div class="flex items-center mb-4 sm:mb-6">
+                        <div class="w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-coral to-sunset rounded-full"></div>
+                        <div class="ml-3 sm:ml-4">
+                            <h4 class="text-white font-bold text-sm sm:text-base">Maria Rodriguez</h4>
+                            <p class="text-white/60 text-xs sm:text-sm">First-Year Mentee, Mathematics</p>
+                        </div>
+                    </div>
+                    <p class="text-white/60 italic mb-4 sm:mb-6 text-sm sm:text-base">"My mentor didn't tutor me in math, but showed me how to balance studies with university life. That guidance was more valuable than any academic help!"</p>
+                    <div class="flex text-sunset text-sm sm:text-base">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="card-hover-effect bg-gradient-to-br from-midnight to-royal rounded-2xl p-6 sm:p-8 border border-white/10">
+                    <div class="flex items-center mb-4 sm:mb-6">
+                        <div class="w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-mint to-sky rounded-full"></div>
+                        <div class="ml-3 sm:ml-4">
+                            <h4 class="text-white font-bold text-sm sm:text-base">David Chen</h4>
+                            <p class="text-white/60 text-xs sm:text-sm">Former Mentee, Now Mentor</p>
+                        </div>
+                    </div>
+                    <p class="text-white/60 italic mb-4 sm:mb-6 text-sm sm:text-base">"The clear expectations made mentoring approachable. I knew I wasn't expected to be a tutor, just share what I wish I knew as a first-year."</p>
+                    <div class="flex text-sunset text-sm sm:text-base">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Application Form -->
+    <section id="applicationForm" class="hidden relative py-16 sm:py-20">
+        <div class="container mx-auto px-4 sm:px-6 max-w-2xl">
+            <div class="relative card-hover-effect bg-gradient-to-br from-midnight to-royal rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10 backdrop-blur-sm">
+                <div class="absolute -top-6 sm:-top-8 left-1/2 -translate-x-1/2 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-violet to-sky rounded-xl sm:rounded-2xl flex items-center justify-center">
+                    <i class="fas fa-users text-white text-xl sm:text-2xl"></i>
+                </div>
+                
+                <div class="text-center mb-8 sm:mb-10 pt-12 sm:pt-14">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3 sm:mb-4">Mentor Application</h2>
+                    <p class="text-white/60 text-sm sm:text-base">Help build bridges in our community</p>
+                </div>
+                
+                <form id="mentorForm" class="space-y-4 sm:space-y-6">
+                    <div class="grid md:grid-cols-2 gap-4 sm:gap-6">
+                        <div>
+                            <label class="block text-white/80 font-medium mb-2 text-sm sm:text-base" for="name">
+                                <i class="fas fa-user text-violet mr-2"></i>Full Name
+                            </label>
+                            <input type="text" id="name" class="w-full px-4 py-3 form-field rounded-xl text-white placeholder-white/40 text-sm sm:text-base" placeholder="John Doe" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-white/80 font-medium mb-2 text-sm sm:text-base" for="studentId">
+                                <i class="fas fa-id-card text-sky mr-2"></i>Student ID
+                            </label>
+                            <input type="text" id="studentId" class="w-full px-4 py-3 form-field rounded-xl text-white placeholder-white/40 text-sm sm:text-base" placeholder="STU12345" required>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white/80 font-medium mb-2 text-sm sm:text-base" for="email">
+                            <i class="fas fa-envelope text-coral mr-2"></i>Email Address
+                        </label>
+                        <input type="email" id="email" class="w-full px-4 py-3 form-field rounded-xl text-white placeholder-white/40 text-sm sm:text-base" placeholder="john@university.edu" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white/80 font-medium mb-2 text-sm sm:text-base" for="whyMentor">
+                            <i class="fas fa-question-circle text-mint mr-2"></i>Why do you want to mentor?
+                        </label>
+                        <textarea id="whyMentor" rows="4" class="w-full px-4 py-3 form-field rounded-xl text-white placeholder-white/40 text-sm sm:text-base" placeholder="Share your motivation..." required></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white/80 font-medium mb-2 text-sm sm:text-base" for="expertise">
+                            <i class="fas fa-star text-sunset mr-2"></i>Areas you can guide in
+                        </label>
+                        <div class="flex flex-wrap gap-2 sm:gap-3 mt-3">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" class="form-checkbox text-violet rounded">
+                                <span class="text-white/70 text-sm sm:text-base">Campus Navigation</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" class="form-checkbox text-sky rounded">
+                                <span class="text-white/70 text-sm sm:text-base">Time Management</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" class="form-checkbox text-mint rounded">
+                                <span class="text-white/70 text-sm sm:text-base">Study Habits</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" class="form-checkbox text-coral rounded">
+                                <span class="text-white/70 text-sm sm:text-base">Social Integration</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6">
+                        <button type="submit" class="flex-1 bg-gradient-to-r from-violet to-sky hover:from-sky hover:to-violet text-white font-bold py-3 sm:py-4 px-6 rounded-xl text-base sm:text-lg transition-all duration-300 transform hover:scale-[1.02]">
+                            <i class="fas fa-paper-plane mr-2 sm:mr-3"></i>Submit Application
+                        </button>
+                        <button type="button" id="cancelBtn" class="flex-1 bg-white/5 hover:bg-white/10 text-white font-bold py-3 sm:py-4 px-6 rounded-xl text-base sm:text-lg transition-all duration-300 border border-white/10 mt-2 sm:mt-0">
+                            <i class="fas fa-times mr-2 sm:mr-3"></i>Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simplified Footer -->
+    <footer class="relative border-t border-white/10 pt-10 sm:pt-12 pb-6 sm:pb-8 mt-12 sm:mt-20">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-6 sm:space-y-0">
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-violet to-sky rounded-xl flex items-center justify-center">
+                        <i class="fas fa-bridge text-white text-lg sm:text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-bold text-white">PromathsBridge</h3>
+                        <p class="text-white/60 text-sm">Connecting generations through mentorship</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4 sm:space-x-6">
+                    <a href="#" class="text-white/70 hover:text-white transition-colors">
+                        <i class="fab fa-twitter text-lg sm:text-xl"></i>
+                    </a>
+                    <a href="#" class="text-white/70 hover:text-white transition-colors">
+                        <i class="fab fa-instagram text-lg sm:text-xl"></i>
+                    </a>
+                    <a href="#" class="text-white/70 hover:text-white transition-colors">
+                        <i class="fab fa-linkedin text-lg sm:text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-white/10 text-center">
+                <p class="text-white/50 text-sm sm:text-base">
+                    <i class="fas fa-heart text-coral mr-2"></i>
+                    Crafted with purpose by The X-AXIS | 2026 Promaths Connect Initiative
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../../scripts/client/index.js"></script>
+</body>
+</html>

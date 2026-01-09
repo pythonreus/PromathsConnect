@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Promaths</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Top Bar -->
+    <header class="bg-gray-800 border-b border-gray-700 p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">Admin Dashboard</h1>
+                    <p class="text-gray-400 text-sm">Promaths Mentorship Program</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="font-medium">Admin User</p>
+                    <p class="text-gray-400 text-sm">admin@promaths.edu</p>
+                </div>
+                <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Horizontal Navigation -->
+    <div class="bg-gray-800 border-b border-gray-700">
+        <div class="max-w-7xl mx-auto">
+            <nav class="flex space-x-1 p-2">
+                <button class="tab-btn px-4 py-3 rounded-lg flex items-center space-x-2 bg-purple-900 border border-purple-700 text-white" data-tab="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="tab-btn px-4 py-3 rounded-lg flex items-center space-x-2 bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600" data-tab="applications">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Applications</span>
+                </button>
+                <button class="tab-btn px-4 py-3 rounded-lg flex items-center space-x-2 bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600" data-tab="system">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>System Data</span>
+                </button>
+                <button class="tab-btn px-4 py-3 rounded-lg flex items-center space-x-2 bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600" data-tab="users">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </button>
+                <button class="tab-btn px-4 py-3 rounded-lg flex items-center space-x-2 bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600" data-tab="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="tab-content max-w-7xl mx-auto p-6" id="tab-content">
+     
+    </div>
+
+    <script src="../../scripts/admin/tabs.js"></script>
+</body>
+</html>
