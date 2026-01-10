@@ -1,0 +1,53 @@
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const router = express.Router();
+
+// Fix __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Client home page
+router.get("/", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "..", "public", "pages", "client", "index.html")
+  );
+});
+
+// Admin login page
+router.get("/login", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "..", "public", "pages", "admin", "admin-login.html")
+  );
+});
+
+// Admin dashboard shell
+router.get("/admin", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "..", "public", "pages", "admin", "admin-dashboard.html")
+  );
+});
+
+// Admin tabs (dashboard, applications, system, users, settings)
+router.get("/admin/:tab", (req, res) => {
+  const tab = req.params.tab;
+
+  const tabPath = path.join(
+    __dirname,
+    "..",
+    "public",
+    "pages",
+    "admin",
+    "tabs",
+    `${tab}-tab.html`
+  );
+
+  res.sendFile(tabPath, err => {
+    if (err) {
+      res.status(404).send("Tab not found");
+    }
+  });
+});
+
+export default router;
