@@ -12,3 +12,5 @@ router.get("/",verifyAuthToken,requireAdmin, getApplicationsPaginated);
 router.get("/:id",verifyAuthToken,requireAdmin, getApplicationById);
 
 export default router;
+
+
