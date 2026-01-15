@@ -1,6 +1,57 @@
 import User from "../models/users.js";
 
 /**
+ * POST /api/system/admin-login
+ * Admin only
+ */
+
+export const adminLogin = async (req, res) => {
+  try {
+    const { uid, email, name } = req.firebaseUser;
+    const { role } = req.preloadedUser;
+
+    if (role !== "admin") {
+      return res.status(403).json({ message: "Admin access required" });
+    }
+
+    let user = await User.findOne({ firebaseId: uid });
+
+    if (!user) {
+      user = await User.create({
+        firebaseId: uid,
+        email,
+        fullName: name,
+        userRole: role,
+        dateOfJoining: new Date(),
+        lastLogin: new Date(),
+      });
+    } else {
+      user.lastLogin = new Date();
+      await user.save();
+    }
+
+    return res.status(200).json({
+      message: "Admin login successful",
+      user: {
+        firebaseId: user.firebaseId,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.userRole,
+      },
+    });
+  } catch (err) {
+    console.error("Admin login DB error:", err);
+
+    return res.status(500).json({
+      message: "Failed to complete admin login",
+    });
+  }
+};
+
+
+
+
+/**
  * GET /api/system/users
  * Admin only
  */
