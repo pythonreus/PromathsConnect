@@ -2,6 +2,9 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import cookieParser from "cookie-parser";
+import cors from "cors";
+
 import applicationRoutes from "./routes/api/applicationRoutes.js";
 import systemRoutes from "./routes/api/systemRoutes.js";
 import pageRoutes from "./routes/pageRoutes.js";
@@ -11,6 +14,13 @@ const app = express();
 // Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Security middleware
+app.use(cors({
+  origin: "http://localhost:3000", 
+  credentials: true                
+}));
+app.use(cookieParser());  
 
 // Middleware
 app.use(express.json());

@@ -57,14 +57,13 @@ import admin from "firebase-admin";
 // verifyFirebaseToken
 export const verifyAuthToken = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
+    const sessionCookie = req.cookies.session;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "No token provided" });
+    if (!sessionCookie) {
+      return res.status(401).json({ message: "No session cookie provided" });
     }
 
-    const idToken = authHeader.split(" ")[1];
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const decodedToken = await admin.auth().verifySessionCookie(sessionCookie, true);
 
     req.firebaseUser = {
       uid: decodedToken.uid,
@@ -72,10 +71,21 @@ export const verifyAuthToken = async (req, res, next) => {
       name: decodedToken.name || "",
     };
 
+    // cookie timer is refreshed everytime a request is sent
+    const oneHour = 60 * 60 * 1 * 1000;
+    res.cookie("session", sessionCookie, {
+      maxAge: oneHour,
+      httpOnly: true,
+      secure: false, // set to true in production
+      sameSite: "Lax",
+      path: "/"
+    });
+
     next();
   } catch (err) {
-    console.error("Token verification failed:", err);
-    return res.status(401).json({ message: "Invalid or expired token" });
+    console.error("Session verification failed:", err);
+    res.clearCookie('session');
+    return res.status(401).json({ message: "Invalid or expired session" });
   }
 };
 

@@ -1,3 +1,4 @@
+import admin from "firebase-admin";
 import User from "../models/users.js";
 
 /**
@@ -8,7 +9,9 @@ import User from "../models/users.js";
 export const adminLogin = async (req, res) => {
   try {
     const { uid, email, name } = req.firebaseUser;
-    const { role } = req.preloadedUser;
+    const { role, gender } = req.preloadedUser;
+
+    console.log(`Logging in admin: ${email} (${gender})`);
 
     if (role !== "admin") {
       return res.status(403).json({ message: "Admin access required" });
@@ -22,6 +25,7 @@ export const adminLogin = async (req, res) => {
         email,
         fullName: name,
         userRole: role,
+        gender,
         dateOfJoining: new Date(),
         lastLogin: new Date(),
       });
@@ -29,6 +33,31 @@ export const adminLogin = async (req, res) => {
       user.lastLogin = new Date();
       await user.save();
     }
+
+    const authHeader = req.headers.authorization;
+    const idToken = authHeader && authHeader.startsWith("Bearer ")?authHeader.split(" ")[1]: null;
+
+    if (!idToken) {
+      console.error("Token extraction failed for:", email);
+      return res.status(401).json({ message: "Authentication token missing" });
+    }
+    
+    // Set expiration time
+    const expiresIn = 60 * 60 * 24 * 1 * 1000;
+
+    // Create the Firebase Session Cookie
+    const sessionCookie = await admin.auth().createSessionCookie(idToken, { expiresIn });
+
+    // Set the Cookie Options
+    const options = {
+      maxAge: expiresIn,
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+      path: "/"
+    };  
+
+    res.cookie("session", sessionCookie, options);
 
     return res.status(200).json({
       message: "Admin login successful",

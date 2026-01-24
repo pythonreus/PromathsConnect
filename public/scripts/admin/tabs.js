@@ -1,9 +1,21 @@
 const tabContent = document.getElementById("tab-content");
 const tabButtons = document.querySelectorAll(".tab-btn");
 
+function updateHeader(user) {
+    const adminNameDisplay = document.querySelector(".text-right p.font-medium");
+    const adminEmailDisplay = document.querySelector(".text-right p.text-gray-400");
+
+    if (user) {
+        adminNameDisplay.textContent = user.name || "Admin User";
+        adminEmailDisplay.textContent = user.email;
+    }
+}
+
 async function loadTab(tabName) {
   try {
-    const response = await fetch(`/admin/${tabName}`);
+    const response = await fetch(`/admin/${tabName}`, {
+      credentials: "include"
+    });
     if (!response.ok) throw new Error("Tab not found");
     
 
@@ -16,6 +28,26 @@ async function loadTab(tabName) {
         Failed to load tab
       </div>
     `;
+  }
+}
+
+async function handleLogout() {
+  try {
+    const response = await fetch("/api/system/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include"
+    });
+
+    if (response.ok) {
+      window.location.href = "../login";
+    }
+  }
+
+  catch (error) {
+    console.error("Logout failed:", error);
   }
 }
 
@@ -34,5 +66,28 @@ tabButtons.forEach(button => {
   });
 });
 
-// Default tab
-loadTab("dashboard");
+async function InitializeDashboard() {
+  try {
+    const response =await fetch("/api/system/me", {
+      method: "GET",
+      credentials: "include"
+    });
+
+    if (!response.ok) {
+      window.location.href = "../login";
+      return;
+    }
+
+    const data = await response.json();
+    updateHeader(data.user);
+
+    loadTab("dashboard");
+  }
+
+  catch (error) {
+    console.error("Auth initialiazation failed:", error);
+    window.location.href = "../login";
+  }
+}
+
+InitializeDashboard();

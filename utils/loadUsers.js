@@ -15,14 +15,15 @@ import PreLoaded from "../models/preLoaded.js"; // adjust path if needed
         for (const row of results) {
           const email = row.email.toLowerCase().trim();
           const role = row.role.trim();
+          const gender = row.gender.toLowerCase().trim();
 
           // Upsert into PreLoaded
           await PreLoaded.updateOne(
             { email },
-            { email, role },
+            { email, role, gender },
             { upsert: true }
           );
-          console.log(`Processed: ${email} (${role})`);
+          console.log(`Processed: ${email} (${role}, ${gender})`);
         }
 
         console.log("CSV import finished!");

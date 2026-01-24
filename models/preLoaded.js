@@ -14,6 +14,11 @@ const preLoadedSchema = new mongoose.Schema({
     enum: ["admin", "mentor", "head_mentor", "mentee"],
     required: true,
   },
+  gender: {
+    type: String,
+    enum: ["male", "female"],
+    required: true,
+  },
 }, {
   timestamps: true
 });
