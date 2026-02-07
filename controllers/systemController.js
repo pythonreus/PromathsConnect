@@ -11,7 +11,7 @@ export const adminLogin = async (req, res) => {
     const { uid, email, name } = req.firebaseUser;
     const { role, gender } = req.preloadedUser;
 
-    console.log(`Logging in admin: ${email} (${gender})`);
+    console.log(`Logging in admin: ${email} (${gender}) (${role})`);
 
     if (role !== "admin") {
       return res.status(403).json({ message: "Admin access required" });
@@ -24,7 +24,7 @@ export const adminLogin = async (req, res) => {
         firebaseId: uid,
         email,
         fullName: name,
-        userRole: role,
+        role: role,
         gender,
         dateOfJoining: new Date(),
         lastLogin: new Date(),
@@ -85,6 +85,7 @@ export const adminLogin = async (req, res) => {
  * Admin only
  */
 export const getUsersPaginated = async (req, res) => {
+  console.log("🟢 Hit /users route", { user: req.user, query: req.query });
   try {
     const page = Math.max(parseInt(req.query.page) || 1, 1);
     const limit = 10;

@@ -7,7 +7,7 @@ import { createApplication, getApplicationsPaginated, getApplicationById } from 
 const router = express.Router();
 
 // POST /api/client/application
-router.post("/",verifyAuthToken, createApplication);
+router.post("/", createApplication);
 router.get("/",verifyAuthToken,requireAdmin, getApplicationsPaginated);
 router.get("/:id",verifyAuthToken,requireAdmin, getApplicationById);
 
