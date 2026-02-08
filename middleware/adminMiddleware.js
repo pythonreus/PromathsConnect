@@ -15,7 +15,7 @@ export const requireAdmin = async (req, res, next) => {
     const user = await User.findOne({ email });
 
     // Check if user exists and has admin role
-    if (!user || user.userRole !== "admin") {
+    if (!user || user.role !== "admin") {
       return res.status(403).json({
         success: false,
         message: "Admin access required",

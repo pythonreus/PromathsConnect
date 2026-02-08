@@ -6,6 +6,34 @@
     <title>Admin Dashboard - Promaths</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+
+
+    <style>
+  .tab-btn {
+    transition: all 0.2s ease;
+  }
+  
+  .tab-btn:hover:not(.active) {
+    background-color: #4B5563 !important;
+  }
+  
+  .active-tab {
+    background-color: #4C1D95 !important;
+    border-color: #7C3AED !important;
+    color: white !important;
+  }
+
+  @media (max-width: 768px) {
+  .overflow-x-auto {
+    font-size: 0.875rem;
+  }
+  
+  table th, table td {
+    padding: 0.5rem 0.25rem;
+  }
+}
+</style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
     <!-- Top Bar -->

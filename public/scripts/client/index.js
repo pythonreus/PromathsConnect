@@ -298,27 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 // Testimonials Data Array with different icons and colors
 const testimonials = [
-    {
-        name: "Alex Johnson",
-        role: "Senior Mentor, Computer Science",
-        message: "I focused on helping my mentee navigate campus life and time management. The monthly reports kept me organized and the structure was perfect for guiding without overwhelming.",
-        color: "from-violet to-sky",
-        icon: "fa-user-graduate"
-    },
-    {
-        name: "Maria Rodriguez",
-        role: "First-Year Mentee, Mathematics",
-        message: "My mentor didn't tutor me in math, but showed me how to balance studies with university life. That guidance was more valuable than any academic help!",
-        color: "from-coral to-sunset",
-        icon: "fa-user-check"
-    },
-    {
-        name: "David Chen",
-        role: "Former Mentee, Now Mentor",
-        message: "The clear expectations made mentoring approachable. I knew I wasn't expected to be a tutor, just share what I wish I knew as a first-year.",
-        color: "from-mint to-sky",
-        icon: "fa-user-tie"
-    },
+   
     {
         name: "Kamogelo Mosehle",
         role: "Former Tutor",
