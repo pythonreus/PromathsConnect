@@ -296,3 +296,423 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+// Testimonials Data Array with different icons and colors
+const testimonials = [
+    {
+        name: "Alex Johnson",
+        role: "Senior Mentor, Computer Science",
+        message: "I focused on helping my mentee navigate campus life and time management. The monthly reports kept me organized and the structure was perfect for guiding without overwhelming.",
+        color: "from-violet to-sky",
+        icon: "fa-user-graduate"
+    },
+    {
+        name: "Maria Rodriguez",
+        role: "First-Year Mentee, Mathematics",
+        message: "My mentor didn't tutor me in math, but showed me how to balance studies with university life. That guidance was more valuable than any academic help!",
+        color: "from-coral to-sunset",
+        icon: "fa-user-check"
+    },
+    {
+        name: "David Chen",
+        role: "Former Mentee, Now Mentor",
+        message: "The clear expectations made mentoring approachable. I knew I wasn't expected to be a tutor, just share what I wish I knew as a first-year.",
+        color: "from-mint to-sky",
+        icon: "fa-user-tie"
+    },
+    {
+        name: "Kamogelo Mosehle",
+        role: "Former Tutor",
+        message: "On my side the program was great at the beginning, the students attended. The shift began closer to mid year exams, and how I see it, it was because of too much school work load for both me and students, sessions didn't go as planned and sometimes students didn't show up. On the other side, some students really appreciated the sessions and help they got from me and other tutors, either through private communication or group chats.",
+        color: "from-purple-500 to-pink-500",
+        icon: "fa-chalkboard-teacher"
+    },
+    {
+        name: "Karabo Monareng",
+        role: "Former Mentee",
+        message: "The 2025 Mentorship Program was a meaningful and enriching experience that provided guidance, support, and personal growth. It created a supportive space that positively contributed to both my academic and personal development.",
+        color: "from-blue-500 to-teal-400",
+        icon: "fa-user-graduate"
+    },
+    {
+        name: "Nompumelelo Mavuso",
+        role: "Former Mentor",
+        message: "It was nice working with different personalities from different people. There were some difficulties with participation from other mentees and just clashing schedules but overall it was an insightful and fulfilling experience.",
+        color: "from-orange-500 to-red-500",
+        icon: "fa-hands-helping"
+    },
+    {
+        name: "Karabo Morajane",
+        role: "Former Mentor",
+        message: "My experience as a mentor was actually amazing, my mentees felt like my younger siblings who I was helping to navigate varsity life in the same way I would have loved to be introduced to varsity life in my first year. I got to spend time with them and know beyond just being wits students.",
+        color: "from-green-500 to-emerald-400",
+        icon: "fa-user-friends"
+    },
+    {
+        name: "Nomsa Vilakazi",
+        role: "Former Tutor",
+        message: "It was great having to help the 1st years, also helped me understand the course more. Even though only 2-3 showed up to the lessons, but I mostly did consultations.",
+        color: "from-yellow-500 to-amber-500",
+        icon: "fa-book-open"
+    },
+    {
+        name: "Leshalabe Carlifonia Thakgalo",
+        role: "Former Tutor",
+        message: "Tutoring in 2025 was a good learning experience where I learned how to work with different kinds of people, improved my communication skill and it also taught me patience. Honestly, what I enjoyed most was getting that genuine 'thank you' after a session, knowing that I had made a difference in my tutee's learning journey.",
+        color: "from-pink-500 to-rose-500",
+        icon: "fa-heart"
+    }
+];
+
+// Wait for DOM to load
+document.addEventListener('DOMContentLoaded', function() {
+    // Find the testimonials section
+    const testimonialsSection = document.getElementById('testimonials');
+    
+    if (!testimonialsSection) {
+        console.error('Testimonials section not found!');
+        return;
+    }
+    
+    // Find the grid container inside the testimonials section
+    const gridContainer = testimonialsSection.querySelector('.grid');
+    
+    if (!gridContainer) {
+        console.error('Grid container not found in testimonials section!');
+        return;
+    }
+    
+    // Replace the grid with a horizontal scrolling carousel
+    gridContainer.outerHTML = `
+        <div class="testimonials-carousel-container relative">
+            <!-- All testimonials in a single row -->
+            <div id="allTestimonialsRow" class="flex gap-6 pb-4 overflow-x-auto snap-x snap-mandatory scroll-smooth">
+                <!-- Testimonials will be inserted here by JavaScript -->
+            </div>
+            
+            <!-- Navigation Buttons -->
+            <button id="scrollLeftBtn" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-8 bg-gradient-to-r from-midnight/90 to-royal/90 text-white w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border border-white/20 hover:border-white/40 transition-all z-10 hover:scale-110 shadow-lg">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            
+            <button id="scrollRightBtn" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-8 bg-gradient-to-r from-midnight/90 to-royal/90 text-white w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border border-white/20 hover:border-white/40 transition-all z-10 hover:scale-110 shadow-lg">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            
+            <!-- Scroll Indicator -->
+            <div class="mt-6 text-center">
+                <p class="text-white/60 text-sm">
+                    <i class="fas fa-arrows-left-right mr-2"></i>Scroll horizontally to see all testimonials
+                </p>
+            </div>
+        </div>
+    `;
+    
+    // Add custom colors to Tailwind config
+    addCustomColors();
+    
+    // Now create all testimonials
+    createAllTestimonials();
+});
+
+// Function to add custom gradient colors
+function addCustomColors() {
+    const style = document.createElement('style');
+    style.textContent = `
+        /* Custom gradient colors for testimonials */
+        .bg-gradient-purple-pink {
+            background-image: linear-gradient(to bottom right, #8b5cf6, #ec4899);
+        }
+        
+        .bg-gradient-blue-teal {
+            background-image: linear-gradient(to bottom right, #3b82f6, #2dd4bf);
+        }
+        
+        .bg-gradient-orange-red {
+            background-image: linear-gradient(to bottom right, #f97316, #ef4444);
+        }
+        
+        .bg-gradient-green-emerald {
+            background-image: linear-gradient(to bottom right, #22c55e, #10b981);
+        }
+        
+        .bg-gradient-yellow-amber {
+            background-image: linear-gradient(to bottom right, #eab308, #f59e0b);
+        }
+        
+        .bg-gradient-pink-rose {
+            background-image: linear-gradient(to bottom right, #ec4899, #f43f5e);
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+function createAllTestimonials() {
+    const testimonialsRow = document.getElementById('allTestimonialsRow');
+    
+    if (!testimonialsRow) return;
+    
+    // Clear any existing content
+    testimonialsRow.innerHTML = '';
+    
+    // Create all testimonial cards
+    testimonials.forEach((testimonial, index) => {
+        const testimonialCard = document.createElement('div');
+        testimonialCard.className = 'snap-start flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 px-2';
+        
+        // Convert Tailwind gradient classes to inline style
+        let gradientStyle = '';
+        if (testimonial.color === 'from-purple-500 to-pink-500') {
+            gradientStyle = 'background-image: linear-gradient(to bottom right, #8b5cf6, #ec4899);';
+        } else if (testimonial.color === 'from-blue-500 to-teal-400') {
+            gradientStyle = 'background-image: linear-gradient(to bottom right, #3b82f6, #2dd4bf);';
+        } else if (testimonial.color === 'from-orange-500 to-red-500') {
+            gradientStyle = 'background-image: linear-gradient(to bottom right, #f97316, #ef4444);';
+        } else if (testimonial.color === 'from-green-500 to-emerald-400') {
+            gradientStyle = 'background-image: linear-gradient(to bottom right, #22c55e, #10b981);';
+        } else if (testimonial.color === 'from-yellow-500 to-amber-500') {
+            gradientStyle = 'background-image: linear-gradient(to bottom right, #eab308, #f59e0b);';
+        } else if (testimonial.color === 'from-pink-500 to-rose-500') {
+            gradientStyle = 'background-image: linear-gradient(to bottom right, #ec4899, #f43f5e);';
+        }
+        
+        testimonialCard.innerHTML = `
+            <div class="card-hover-effect bg-gradient-to-br from-midnight to-royal rounded-2xl p-6 sm:p-8 border border-white/10 h-full">
+                <div class="flex items-center mb-4 sm:mb-6">
+                    <div class="w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center testimonial-icon" 
+                         style="${gradientStyle}">
+                        <i class="fas ${testimonial.icon} text-white text-sm sm:text-base"></i>
+                    </div>
+                    <div class="ml-3 sm:ml-4">
+                        <h4 class="text-white font-bold text-sm sm:text-base">${testimonial.name}</h4>
+                        <p class="text-white/60 text-xs sm:text-sm">${testimonial.role}</p>
+                    </div>
+                </div>
+                <p class="text-white/60 italic text-sm sm:text-base leading-relaxed">"${testimonial.message}"</p>
+            </div>
+        `;
+        
+        // If it's a Tailwind gradient class, use that
+        if (testimonial.color.includes('from-') && testimonial.color.includes('to-') && 
+            !testimonial.color.includes('purple') && !testimonial.color.includes('blue') && 
+            !testimonial.color.includes('orange') && !testimonial.color.includes('green') &&
+            !testimonial.color.includes('yellow') && !testimonial.color.includes('pink')) {
+            
+            testimonialCard.querySelector('.rounded-full').className = 
+                `w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br ${testimonial.color} rounded-full flex items-center justify-center testimonial-icon`;
+        }
+        
+        testimonialsRow.appendChild(testimonialCard);
+    });
+    
+    // Add CSS for smooth scrolling
+    addCarouselStyles();
+    
+    // Initialize navigation
+    initializeCarouselNavigation();
+}
+
+function addCarouselStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .testimonials-carousel-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        #allTestimonialsRow {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+            padding-bottom: 20px;
+            margin-bottom: -20px;
+        }
+        
+        #allTestimonialsRow::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        #allTestimonialsRow::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        #allTestimonialsRow::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+        
+        #allTestimonialsRow::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            #allTestimonialsRow > div {
+                width: 85%;
+            }
+            
+            #scrollLeftBtn, #scrollRightBtn {
+                display: none;
+            }
+        }
+        
+        @media (min-width: 641px) and (max-width: 1024px) {
+            #allTestimonialsRow > div {
+                width: 48%;
+            }
+        }
+        
+        @media (min-width: 1025px) {
+            #allTestimonialsRow > div {
+                width: 32%;
+            }
+        }
+        
+        /* Smooth scrolling */
+        .snap-x {
+            scroll-snap-type: x mandatory;
+        }
+        
+        .snap-start {
+            scroll-snap-align: start;
+        }
+        
+        .snap-mandatory {
+            scroll-snap-stop: always;
+        }
+        
+        /* Hide scroll buttons on mobile */
+        @media (max-width: 640px) {
+            #scrollLeftBtn, #scrollRightBtn {
+                display: none;
+            }
+        }
+        
+        /* Testimonial icons */
+        .testimonial-icon {
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-icon:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+        }
+        
+        /* Custom gradients for icon backgrounds */
+        .bg-gradient-purple-pink {
+            background-image: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+        }
+        
+        .bg-gradient-blue-teal {
+            background-image: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%);
+        }
+        
+        .bg-gradient-orange-red {
+            background-image: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+        }
+        
+        .bg-gradient-green-emerald {
+            background-image: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+        }
+        
+        .bg-gradient-yellow-amber {
+            background-image: linear-gradient(135deg, #eab308 0%, #f59e0b 100%);
+        }
+        
+        .bg-gradient-pink-rose {
+            background-image: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+        }
+        
+        /* Color-specific icon containers */
+        .icon-purple-pink { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+        .icon-blue-teal { background: linear-gradient(135deg, #3b82f6, #2dd4bf); }
+        .icon-orange-red { background: linear-gradient(135deg, #f97316, #ef4444); }
+        .icon-green-emerald { background: linear-gradient(135deg, #22c55e, #10b981); }
+        .icon-yellow-amber { background: linear-gradient(135deg, #eab308, #f59e0b); }
+        .icon-pink-rose { background: linear-gradient(135deg, #ec4899, #f43f5e); }
+    `;
+    document.head.appendChild(style);
+}
+
+function initializeCarouselNavigation() {
+    const testimonialsRow = document.getElementById('allTestimonialsRow');
+    const scrollLeftBtn = document.getElementById('scrollLeftBtn');
+    const scrollRightBtn = document.getElementById('scrollRightBtn');
+    
+    if (!testimonialsRow || !scrollLeftBtn || !scrollRightBtn) return;
+    
+    // Calculate scroll amount (width of one card + gap)
+    function getScrollAmount() {
+        const cards = testimonialsRow.querySelectorAll('div');
+        if (cards.length === 0) return 400;
+        
+        const cardWidth = cards[0].offsetWidth;
+        const gap = 24; // 6 * 4px (gap-6 = 1.5rem = 24px)
+        return cardWidth + gap;
+    }
+    
+    // Scroll left
+    scrollLeftBtn.addEventListener('click', () => {
+        testimonialsRow.scrollBy({
+            left: -getScrollAmount(),
+            behavior: 'smooth'
+        });
+    });
+    
+    // Scroll right
+    scrollRightBtn.addEventListener('click', () => {
+        testimonialsRow.scrollBy({
+            left: getScrollAmount(),
+            behavior: 'smooth'
+        });
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            testimonialsRow.scrollBy({
+                left: -getScrollAmount(),
+                behavior: 'smooth'
+            });
+        } else if (e.key === 'ArrowRight') {
+            testimonialsRow.scrollBy({
+                left: getScrollAmount(),
+                behavior: 'smooth'
+            });
+        }
+    });
+    
+    // Show/hide navigation buttons based on scroll position
+    function updateNavButtons() {
+        const scrollLeft = testimonialsRow.scrollLeft;
+        const scrollWidth = testimonialsRow.scrollWidth;
+        const clientWidth = testimonialsRow.clientWidth;
+        
+        // Show/hide left button
+        if (scrollLeft <= 10) {
+            scrollLeftBtn.style.opacity = '0.5';
+            scrollLeftBtn.style.cursor = 'not-allowed';
+        } else {
+            scrollLeftBtn.style.opacity = '1';
+            scrollLeftBtn.style.cursor = 'pointer';
+        }
+        
+        // Show/hide right button
+        if (scrollLeft + clientWidth >= scrollWidth - 10) {
+            scrollRightBtn.style.opacity = '0.5';
+            scrollRightBtn.style.cursor = 'not-allowed';
+        } else {
+            scrollRightBtn.style.opacity = '1';
+            scrollRightBtn.style.cursor = 'pointer';
+        }
+    }
+    
+    // Initial button state
+    updateNavButtons();
+    
+    // Update button states on scroll
+    testimonialsRow.addEventListener('scroll', updateNavButtons);
+    
+    // Update button states on window resize
+    window.addEventListener('resize', updateNavButtons);
+}
