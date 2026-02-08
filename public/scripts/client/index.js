@@ -319,13 +319,7 @@ const testimonials = [
         color: "from-mint to-sky",
         icon: "fa-user-tie"
     },
-    {
-        name: "Kamogelo Mosehle",
-        role: "Former Tutor",
-        message: "On my side the program was great at the beginning, the students attended. The shift began closer to mid year exams, and how I see it, it was because of too much school work load for both me and students, sessions didn't go as planned and sometimes students didn't show up. On the other side, some students really appreciated the sessions and help they got from me and other tutors, either through private communication or group chats.",
-        color: "from-purple-500 to-pink-500",
-        icon: "fa-chalkboard-teacher"
-    },
+    
     {
         name: "Karabo Monareng",
         role: "Former Mentee",
@@ -360,6 +354,13 @@ const testimonials = [
         message: "Tutoring in 2025 was a good learning experience where I learned how to work with different kinds of people, improved my communication skill and it also taught me patience. Honestly, what I enjoyed most was getting that genuine 'thank you' after a session, knowing that I had made a difference in my tutee's learning journey.",
         color: "from-pink-500 to-rose-500",
         icon: "fa-heart"
+    },
+    {
+        name: "Siyamthanda Madiba",
+        role: "Former Tutor",
+        message: "I had the greatest expiriencewith my mentees, they never missed a session not even one person has. They were so interactive always looking forward to our sessions. It was such a honour to be the one to guide them through their varsity experience. The overall experiencewas very fulfilling and I'd like to believe that I played my role as a mentor really well and this is supported by their feedback.",
+        color: "from-purple-500 to-pink-500",
+        icon: "fa-chalkboard-teacher"
     }
 ];
 
