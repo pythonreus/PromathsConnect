@@ -129,7 +129,7 @@ document.getElementById("googleLoginBtn").addEventListener("click", async () => 
         throw new Error(errorData.message || "Admin login failed.");
     }
 
-    window.location.href = "http://localhost:3000/admin";
+    window.location.href = "/admin";
 
     } catch (error) {
     console.error("Google login error:", error);
