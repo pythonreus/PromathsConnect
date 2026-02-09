@@ -21,12 +21,6 @@ const tabs = {
   applications: {
     load: loadApplications
   },
-  system: {
-    load: loadSystem
-  },
-  settings: {
-    load: loadSettings
-  }
 };
 
 const usersState = {
@@ -704,39 +698,8 @@ async function changeApplicationsPage(newPage) {
   }
 }
 
-// ============ SYSTEM TAB ============
-async function loadSystem() {
-  tabContent.innerHTML = `
-    <div class="space-y-6">
-      <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-        <div class="flex justify-between items-center mb-6">
-          <div>
-            <h2 class="text-2xl font-bold">System Data</h2>
-            <p class="text-gray-400">View system analytics and statistics</p>
-          </div>
-        </div>
-        <p class="text-gray-400">System data interface will appear here...</p>
-      </div>
-    </div>
-  `;
-}
 
-// ============ SETTINGS TAB ============
-async function loadSettings() {
-  tabContent.innerHTML = `
-    <div class="space-y-6">
-      <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-        <div class="flex justify-between items-center mb-6">
-          <div>
-            <h2 class="text-2xl font-bold">Settings</h2>
-            <p class="text-gray-400">Configure system settings</p>
-          </div>
-        </div>
-        <p class="text-gray-400">Settings interface will appear here...</p>
-      </div>
-    </div>
-  `;
-}
+
 
 // ============ EVENT LISTENERS ============
 tabButtons.forEach(button => {

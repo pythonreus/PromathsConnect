@@ -298,6 +298,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 // Testimonials Data Array with different icons and colors
 const testimonials = [
+    {
+        name: "Siyamthanda Madziba",
+        role: "Former Mentor",
+        message: "I had the greatest experience with my mentees , they never missed a session not even one person has . They were so interactive always looking forward to our sessions . It was such a honour to be the one to guide them through their varsity experience. The overall experience was very fulfilling and I’d like to believe that I played my role as a mentor really well and this is supported by their feedback, Thank you! ",
+        color: "from-blue-500 to-teal-400",
+        icon: "fa-chalkboard-teacher"
+    },
    
     {
         name: "Kamogelo Mosehle",
@@ -308,7 +315,7 @@ const testimonials = [
     },
     {
         name: "Karabo Monareng",
-        role: "Former Mentee",
+        role: "Former Mentor",
         message: "The 2025 Mentorship Program was a meaningful and enriching experience that provided guidance, support, and personal growth. It created a supportive space that positively contributed to both my academic and personal development.",
         color: "from-blue-500 to-teal-400",
         icon: "fa-user-graduate"
