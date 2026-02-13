@@ -347,7 +347,21 @@ const testimonials = [
         message: "Tutoring in 2025 was a good learning experience where I learned how to work with different kinds of people, improved my communication skill and it also taught me patience. Honestly, what I enjoyed most was getting that genuine 'thank you' after a session, knowing that I had made a difference in my tutee's learning journey.",
         color: "from-pink-500 to-rose-500",
         icon: "fa-heart"
-    }
+    },
+     {
+        name: "Jabulile Skosana",
+        role: "Former Mentee",
+        message: "I think the 2025 mentorship was really helpful, I got help with things like time management, exams preps and got to socialize.It made the transition from high school to university feel less uncomfortable. Having to have a session and talk to your group mates makes the pressure feel less heavy in knowing that you are not alone.Although I had a great experience, but it's also true that some days the mentor was not prepared,which can be improved.",
+        color: "from-green-500 to-emerald-400",
+        icon: "fa-user-friends"
+    },
+     {
+        name: "Melokuhle Mngadi",
+        role: "Former Mentee",
+        message: "The mentorship program was really helpful for me, especially during my first year at varsity. It provided guidance, motivation, and a safe space to ask questions and grow, both academically and personally. The support I received made my transition into university much easier plus it helped manage my time and academics well and I truly appreciate the time and effort that went into mentoring us.",
+        color: "from-orange-500 to-red-500",
+        icon: "fa-hands-helping"
+    },
 ];
 
 // Wait for DOM to load

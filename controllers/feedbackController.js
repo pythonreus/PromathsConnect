@@ -93,14 +93,13 @@ export const getAdminFeedback = async (req, res) => {
     const limit = Math.min(parseInt(req.query.limit) || 20, 100);
     const skip = (page - 1) * limit;
     
-    const { type, status, category, search } = req.query;
+    const { type, category, search } = req.query; // 👈 Removed status
 
     // Build query - NEVER return submittedBy
     let query = {};
 
-    // Filters
+    // Filters (optional)
     if (type) query.type = type;
-    if (status) query.status = status;
     if (category) query.category = category;
 
     // Search in content and title
@@ -111,22 +110,26 @@ export const getAdminFeedback = async (req, res) => {
       ];
     }
 
+    console.log("🔍 Query:", JSON.stringify(query, null, 2));
+
     // Get total count
     const total = await Feedback.countDocuments(query);
 
-    // Get feedback - explicitly exclude submittedBy and metadata
-    const feedback = await Feedback.find(query)
-      .select("-submittedBy -anonymousId -userRole -resolvedBy") // NEVER expose user info
+    // Get feedback - NO STATUS FILTER
+    const feedback = await Feedback.find(query) // 👈 Get ALL feedback matching query
+      .select("-submittedBy -anonymousId -userRole -resolvedBy")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean();
 
+    console.log(`📊 Found ${feedback.length} feedback items`);
+
     // Add anonymous display IDs
     const anonymizedFeedback = feedback.map(item => ({
       ...item,
       displayId: `FB-${item._id.toString().slice(-6).toUpperCase()}`,
-      submittedBy: undefined, // Extra safety
+      submittedBy: undefined,
       anonymousId: undefined,
       userRole: undefined,
       metadata: undefined
@@ -148,7 +151,6 @@ export const getAdminFeedback = async (req, res) => {
       },
       filters: {
         type: type || null,
-        status: status || null,
         category: category || null,
         search: search || null
       },

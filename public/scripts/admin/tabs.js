@@ -76,15 +76,22 @@ async function handleLogout() {
     });
 
     if (response.ok) {
-      window.location.href = "../login";
+      window.location.href = "/login";
     }
   } catch (error) {
     console.error("Logout failed:", error);
   }
 }
+// Add event listener for logout button
+document.addEventListener('DOMContentLoaded', () => {
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', handleLogout);
+  }
+});
 
 // ============ DASHBOARD TAB ============
-// ============ DASHBOARD TAB WITH FEEDBACK BOX ============
+
 async function loadDashboard() {
   try {
     tabContent.innerHTML = `
@@ -126,7 +133,17 @@ async function fetchFeedbackStats() {
 
 async function fetchRecentFeedback(limit = 10) {
   try {
-    const res = await fetch(`/api/feedback/admin?limit=${limit}&status=pending,reviewed,acknowledged`, {
+    //const user = auth.currentUser;
+    //if (!user) throw new Error("No user logged in");
+    
+    //const token = await user.getIdToken();
+    
+    // 👈 Remove status parameter
+    const res = await fetch(`/api/feedback/admin?limit=${limit}`, {
+      headers: {
+        //"Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
       credentials: "include"
     });
     if (!res.ok) throw new Error("Failed to fetch feedback");
