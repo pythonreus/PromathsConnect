@@ -7,6 +7,8 @@ import cors from "cors";
 
 import applicationRoutes from "./routes/api/applicationRoutes.js";
 import systemRoutes from "./routes/api/systemRoutes.js";
+import communicationRoutes from "./routes/api/communicationRoutes.js";
+import feedbackRoutes from "./routes/api/feedbackRoutes.js";
 import pageRoutes from "./routes/pageRoutes.js";
 
 const app = express();
@@ -29,6 +31,8 @@ app.use(express.static(path.join(__dirname, "public")));
 // API routes
 app.use("/api/applications", applicationRoutes);
 app.use("/api/system", systemRoutes);
+app.use("/api/communications",communicationRoutes);
+app.use("/api/feedback",feedbackRoutes);
 
 
 // Page routes (HTML)

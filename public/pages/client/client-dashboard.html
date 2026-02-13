@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard - Promaths Bridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e3a8a 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(124, 58, 237, 0.6);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.3);
+            transform: translateY(-2px);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #a78bfa, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .tab-btn {
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #7c3aed, #3b82f6);
+            color: white;
+            border-color: transparent;
+        }
+        .communication-card {
+            background: rgba(17, 24, 39, 0.6);
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+        .communication-card.unread {
+            border-left-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        .communication-card.read {
+            border-left-color: #6b7280;
+            opacity: 0.8;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .status-reviewed { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .status-acknowledged { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+        .status-resolved { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    </style>
+</head>
+<body class="p-4 md:p-6 lg:p-8">
+    <!-- Fixed Header -->
+    <header class="glass-card rounded-2xl p-4 mb-6 flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 bg-gradient-to-br from-violet-600 to-blue-600 rounded-xl flex items-center justify-center">
+                <img src="../../images/Wits-Promaths-logo.jpeg" alt="Logo" class="w-8 h-8 object-contain rounded-lg">
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-white">Promaths <span class="gradient-text">Bridge</span></h1>
+                <p class="text-sm text-gray-400" id="userRole">Loading...</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="text-right hidden sm:block">
+                <p class="font-medium text-white" id="userName">Loading...</p>
+                <p class="text-gray-400 text-sm" id="userEmail">Loading...</p>
+            </div>
+            <div class="w-10 h-10 bg-gradient-to-br from-violet-600 to-blue-600 rounded-full flex items-center justify-center">
+                <span class="text-white font-bold" id="userInitial">U</span>
+            </div>
+            <button id="logoutBtn" class="p-2 hover:bg-white/10 rounded-lg transition-colors">
+                <i class="fas fa-sign-out-alt text-gray-400 hover:text-white"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Sidebar Navigation -->
+        <div class="lg:col-span-1">
+            <div class="glass-card rounded-2xl p-4 sticky top-6">
+                <div class="space-y-2">
+                    <button class="tab-btn active w-full text-left px-4 py-3 rounded-xl flex items-center space-x-3 transition-all" data-tab="home">
+                        <i class="fas fa-home w-5 text-blue-400"></i>
+                        <span class="text-white font-medium">Home</span>
+                    </button>
+                    <button class="tab-btn w-full text-left px-4 py-3 rounded-xl flex items-center space-x-3 transition-all text-gray-400 hover:text-white hover:bg-white/5" data-tab="communications">
+                        <i class="fas fa-bullhorn w-5 text-violet-400"></i>
+                        <span class="font-medium">Communications</span>
+                        <span id="unreadBadge" class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full hidden">0</span>
+                    </button>
+                    <button class="tab-btn w-full text-left px-4 py-3 rounded-xl flex items-center space-x-3 transition-all text-gray-400 hover:text-white hover:bg-white/5" data-tab="feedback">
+                        <i class="fas fa-comment-dots w-5 text-green-400"></i>
+                        <span class="font-medium">Feedback</span>
+                    </button>
+                    <div class="border-t border-white/10 my-4 pt-4">
+                        <div class="px-4 py-2">
+                            <p class="text-xs text-gray-500 uppercase tracking-wider">Your Progress</p>
+                        </div>
+                        <div class="px-4 py-2">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-400">Profile</span>
+                                <span class="text-white font-medium" id="profileProgress">75%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-violet-600 to-blue-600 h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="lg:col-span-3">
+            <div id="tab-content" class="space-y-6">
+                <!-- Dynamic content loaded via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="glass-card w-full max-w-lg p-6 rounded-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-white">Submit Feedback</h3>
+                <button onclick="closeFeedbackModal()" class="p-2 hover:bg-white/10 rounded-lg">
+                    <i class="fas fa-times text-gray-400"></i>
+                </button>
+            </div>
+            <form id="feedbackForm" class="space-y-4">
+                <div>
+                    <label class="block text-gray-300 text-sm mb-2">Type</label>
+                    <select id="feedbackType" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white">
+                        <option value="">Select type</option>
+                        <option value="suggestion">Suggestion</option>
+                        <option value="complaint">Complaint</option>
+                        <option value="review">Review</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-300 text-sm mb-2">Category</label>
+                    <select id="feedbackCategory" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white">
+                        <option value="mentorship">Mentorship</option>
+                        <option value="curriculum">Curriculum</option>
+                        <option value="scheduling">Scheduling</option>
+                        <option value="communication">Communication</option>
+                        <option value="technical">Technical</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-300 text-sm mb-2">Title (Optional)</label>
+                    <input type="text" id="feedbackTitle" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white" placeholder="Brief summary">
+                </div>
+                <div id="ratingField" class="hidden">
+                    <label class="block text-gray-300 text-sm mb-2">Rating</label>
+                    <div class="flex space-x-2">
+                        <button type="button" onclick="setRating(1)" class="rating-star w-10 h-10 rounded-lg bg-gray-800 hover:bg-yellow-600/20 flex items-center justify-center">
+                            <i class="fas fa-star text-gray-500"></i>
+                        </button>
+                        <button type="button" onclick="setRating(2)" class="rating-star w-10 h-10 rounded-lg bg-gray-800 hover:bg-yellow-600/20 flex items-center justify-center">
+                            <i class="fas fa-star text-gray-500"></i>
+                        </button>
+                        <button type="button" onclick="setRating(3)" class="rating-star w-10 h-10 rounded-lg bg-gray-800 hover:bg-yellow-600/20 flex items-center justify-center">
+                            <i class="fas fa-star text-gray-500"></i>
+                        </button>
+                        <button type="button" onclick="setRating(4)" class="rating-star w-10 h-10 rounded-lg bg-gray-800 hover:bg-yellow-600/20 flex items-center justify-center">
+                            <i class="fas fa-star text-gray-500"></i>
+                        </button>
+                        <button type="button" onclick="setRating(5)" class="rating-star w-10 h-10 rounded-lg bg-gray-800 hover:bg-yellow-600/20 flex items-center justify-center">
+                            <i class="fas fa-star text-gray-500"></i>
+                        </button>
+                    </div>
+                    <input type="hidden" id="feedbackRating" value="0">
+                </div>
+                <div>
+                    <label class="block text-gray-300 text-sm mb-2">Your Feedback</label>
+                    <textarea id="feedbackContent" rows="4" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white" placeholder="Share your thoughts..."></textarea>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="closeFeedbackModal()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 rounded-lg text-white">
+                        Submit Feedback
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="../../scripts/client/clientDashboard.js"></script>
+</body>
+</html>

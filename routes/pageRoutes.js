@@ -22,6 +22,21 @@ router.get("/login", (req, res) => {
   );
 });
 
+// client login page
+router.get("/client-login", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "..", "public", "pages", "client", "client-login.html")
+  );
+});
+
+// client login page
+router.get("/client-dashboard", (req, res) => {
+  console.log("I got hit");
+  res.sendFile(
+    path.join(__dirname, "..", "public", "pages", "client", "client-dashboard.html")
+  );
+});
+
 // Admin dashboard shell
 router.get("/admin", (req, res) => {
   res.sendFile(
