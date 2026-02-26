@@ -1,6 +1,8 @@
 import nodemailer from 'nodemailer';
 import dns from 'dns';
 
+dns.setDefaultResultOrder("ipv4first");
+
 // Create transporter based on environment
 const createTransporter = () => {
   // For development/testing - Ethereal (fake email)
@@ -26,33 +28,40 @@ const createTransporter = () => {
     console.log(`   App Password length: ${appPassword.length} chars`);
     
     // 🔥 FIX: Force IPv4 by using custom lookup function
+    // return nodemailer.createTransport({
+    //   host: 'smtp.gmail.com',
+    //   port: 465,
+    //   secure: true,
+    //   auth: {
+    //     user: process.env.GMAIL_USER,
+    //     pass: appPassword
+    //   },
+    //   pool: true,
+    //   maxConnections: 1,
+    //   maxMessages: 10,
+    //   connectionTimeout: 30000, // 30 seconds
+    //   greetingTimeout: 30000,
+    //   socketTimeout: 60000,
+    
+    // });
+
+
     return nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: appPassword
-      },
-      pool: true,
-      maxConnections: 1,
-      maxMessages: 10,
-      connectionTimeout: 30000, // 30 seconds
-      greetingTimeout: 30000,
-      socketTimeout: 60000,
-      // Force IPv4 only
-      lookup: (hostname, options, callback) => {
-        dns.resolve4(hostname, (err, addresses) => {
-          if (err) {
-            console.error('❌ DNS lookup failed:', err);
-            return callback(err);
-          }
-          // Use the first IPv4 address
-          console.log(`📧 Resolved ${hostname} to IPv4: ${addresses[0]}`);
-          callback(null, addresses[0], 4);
-        });
-      }
-    });
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  family: 4, // 🔥 FORCE IPv4
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: appPassword
+  },
+  pool: true,
+  maxConnections: 1,
+  maxMessages: 10,
+  connectionTimeout: 30000,
+  greetingTimeout: 30000,
+  socketTimeout: 60000
+});
   }
 
   // For production - SMTP
