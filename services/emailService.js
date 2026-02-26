@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import dns from 'dns';
 
 // Create transporter based on environment
 const createTransporter = () => {
@@ -16,23 +17,41 @@ const createTransporter = () => {
     });
   }
 
-  // For production - Gmail
+  // For production - Gmail with IPv4 fix
   if (process.env.EMAIL_PROVIDER === 'gmail') {
-    console.log('📧 Configuring Gmail for BCC sending');
+    console.log('📧 Configuring Gmail for BCC sending (IPv4 only)');
     console.log(`   User: ${process.env.GMAIL_USER}`);
     
     const appPassword = process.env.GMAIL_APP_PASSWORD?.replace(/\s+/g, '') || '';
     console.log(`   App Password length: ${appPassword.length} chars`);
     
+    // 🔥 FIX: Force IPv4 by using custom lookup function
     return nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.GMAIL_USER,
         pass: appPassword
       },
       pool: true,
       maxConnections: 1,
-      maxMessages: 10
+      maxMessages: 10,
+      connectionTimeout: 30000, // 30 seconds
+      greetingTimeout: 30000,
+      socketTimeout: 60000,
+      // Force IPv4 only
+      lookup: (hostname, options, callback) => {
+        dns.resolve4(hostname, (err, addresses) => {
+          if (err) {
+            console.error('❌ DNS lookup failed:', err);
+            return callback(err);
+          }
+          // Use the first IPv4 address
+          console.log(`📧 Resolved ${hostname} to IPv4: ${addresses[0]}`);
+          callback(null, addresses[0], 4);
+        });
+      }
     });
   }
 
@@ -119,8 +138,16 @@ export const sendEmail = async ({ to, bcc, subject, html, text, from }) => {
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error(`❌ Failed to send email:`, error.message);
+    console.error('Error code:', error.code);
+    console.error('Error command:', error.command);
     
-    // If authentication failed, reset the transporter and throw
+    // If network unreachable error, try to reset and maybe switch to backup
+    if (error.code === 'ENETUNREACH' || error.message.includes('ENETUNREACH')) {
+      console.log('⚠️ Network unreachable error detected, resetting transporter...');
+      resetTransporter();
+    }
+    
+    // If authentication failed, reset the transporter
     if (error.message.includes('535') || error.message.includes('Invalid login') || error.message.includes('Application-specific password required')) {
       console.log('⚠️ Authentication failed, resetting transporter...');
       resetTransporter();
@@ -311,9 +338,8 @@ function createEmailContent(communication) {
  * Verify email configuration
  */
 export const verifyEmailConfig = async () => {
-  const currentTransporter = getTransporter();
-  
   try {
+    const currentTransporter = getTransporter();
     await currentTransporter.verify();
     console.log('✅ Email server connection verified');
     return { 
@@ -343,6 +369,7 @@ export const sendTestEmail = async (to) => {
       <p>If you received this, your email configuration is working!</p>
       <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
       <p><strong>Provider:</strong> ${process.env.NODE_ENV === 'production' ? 'Gmail' : 'Ethereal'}</p>
+      <p><strong>Connection:</strong> IPv4 only</p>
       <hr>
       <p style="color: #6b7280;">Promaths Mentorship Program</p>
     `
