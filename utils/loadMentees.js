@@ -12,10 +12,20 @@ import PreLoaded from "../models/preLoaded.js"; // adjust path if needed
     .on("data", (data) => results.push(data))
     .on("end", async () => {
       try {
+        let value = 1;
         for (const row of results) {
           const email = row.Email.toLowerCase().trim();
           const role = "mentee";
           const gender = "female";
+
+          // const emails = results.map(r => r.Email?.toLowerCase().trim()).filter(Boolean);
+
+          // const unique = new Set(emails);
+
+          // console.log("Total rows:", emails.length);
+          // console.log("Unique emails:", unique.size);
+          // console.log("Duplicates:", emails.length - unique.size);
+
 
           // Upsert into PreLoaded
           await PreLoaded.updateOne(
@@ -23,7 +33,8 @@ import PreLoaded from "../models/preLoaded.js"; // adjust path if needed
             { email, role, gender },
             { upsert: true }
           );
-          console.log(`Processed: ${email} (${role}, ${gender})`);
+          console.log(`Processed: ${email} (${role}, ${gender}) ${value}`);
+          value++;
         }
 
         console.log("CSV import finished!");

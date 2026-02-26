@@ -1,5 +1,6 @@
 import Application from "../models/applications.js";
 
+
 /**
  * Create a new application
  * POST /api/client/application
@@ -76,6 +77,8 @@ export const createApplication = async (req, res) => {
     });
   }
 };
+
+
 
 
 

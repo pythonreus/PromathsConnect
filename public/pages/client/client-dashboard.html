@@ -66,6 +66,33 @@
         .status-reviewed { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
         .status-acknowledged { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
         .status-resolved { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+
+
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slideDown {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        /* Loading spinner */
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="p-4 md:p-6 lg:p-8">
@@ -93,6 +120,120 @@
             </button>
         </div>
     </header>
+
+<!-- Profile Update Form - Will be hidden when completed -->
+<div id="profileUpdateContainer" class="max-w-4xl mx-auto mb-8 hidden">
+    <div class="glass-card rounded-2xl p-6 border-l-4 border-violet-500 animate-slideDown">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h2 class="text-xl font-bold text-white flex items-center">
+                    <i class="fas fa-user-edit text-violet-400 mr-2"></i>
+                    Complete Your Profile
+                </h2>
+                <p class="text-gray-400 text-sm">Please provide your faculty information to complete your profile setup</p>
+            </div>
+            <span class="bg-violet-900/50 text-violet-300 text-xs px-3 py-1 rounded-full border border-violet-700">
+                Required
+            </span>
+        </div>
+
+        <!-- Error Message -->
+        <div id="profileError" class="mb-4 p-3 bg-red-900/50 text-red-300 rounded-lg border border-red-700 hidden">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <span id="profileErrorMessage"></span>
+        </div>
+
+        <!-- Success Message -->
+        <div id="profileSuccess" class="mb-4 p-3 bg-green-900/50 text-green-300 rounded-lg border border-green-700 hidden">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="profileSuccessMessage"></span>
+        </div>
+
+        <form id="profileUpdateForm" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Faculty Field -->
+                <div>
+                    <label class="block text-gray-300 text-sm font-medium mb-2">
+                        <i class="fas fa-university text-blue-400 mr-1"></i>
+                        Faculty <span class="text-red-400">*</span>
+                    </label>
+                    <select 
+                        name="faculty" 
+                        id="facultyField"
+                        required
+                        class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                    >
+                        <option value="" disabled selected>Select your faculty</option>
+                        <option value="Science">🔬 Science</option>
+                        <option value="EBE">⚡ EBE (Engineering & Built Environment)</option>
+                        <option value="Humanities">📚 Humanities</option>
+                        <option value="CLM">⚖️ CLM (Commerce, Law & Management)</option>
+                        <option value="Health Sciences">🏥 Health Sciences</option>
+                    </select>
+                </div>
+
+                <!-- Gender Field (pre-filled but editable) -->
+                <div>
+                    <label class="block text-gray-300 text-sm font-medium mb-2">
+                        <i class="fas fa-venus-mars text-pink-400 mr-1"></i>
+                        Gender <span class="text-red-400">*</span>
+                    </label>
+                    <select 
+                        name="gender" 
+                        id="genderField"
+                        required
+                        class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                    >
+                        <option value="" disabled>Select your gender</option>
+                        <option value="male">👨 Male</option>
+                        <option value="female">👩 Female</option>
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        You can update your gender if needed
+                    </p>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex items-center justify-end pt-2">
+                <button 
+                    type="submit"
+                    id="profileSubmitBtn"
+                    class="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 rounded-lg text-white font-medium flex items-center space-x-2 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <i class="fas fa-save"></i>
+                    <span>Save Profile Information</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Profile Completed Banner (shown instead of form) -->
+<div id="profileCompletedBanner" class="max-w-4xl mx-auto mb-8 hidden">
+    <div class="glass-card rounded-2xl p-4 border-l-4 border-green-500 bg-gradient-to-r from-green-900/20 to-emerald-900/20">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-green-900/50 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-white font-medium">Profile Completed</h3>
+                    <p class="text-sm text-gray-400">
+                        Faculty: <span id="displayFaculty" class="text-green-400"></span> • 
+                        Gender: <span id="displayGender" class="text-green-400"></span>
+                    </p>
+                </div>
+            </div>
+            <button onclick="editProfile()" class="text-sm text-blue-400 hover:text-blue-300 flex items-center space-x-1">
+                <i class="fas fa-edit"></i>
+                <span>Edit</span>
+            </button>
+        </div>
+    </div>
+</div>
+    
 
     <!-- Main Grid Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">

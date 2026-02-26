@@ -1331,6 +1331,63 @@ async function fetchApplicationById(id) {
   return res.json();
 }
 
+// ============ UPDATE APPLICATION STATUS FUNCTION ============
+
+async function updateApplicationStatus(applicationId, status) {
+  try {
+    // Show loading state on the buttons - FIXED SELECTORS
+    const approveBtn = document.querySelector(`button[onclick*="'${applicationId}', 'approved'"]`);
+    const rejectBtn = document.querySelector(`button[onclick*="'${applicationId}', 'rejected'"]`);
+    
+    if (approveBtn) {
+      approveBtn.disabled = true;
+      approveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+    if (rejectBtn) {
+      rejectBtn.disabled = true;
+      rejectBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+
+    const response = await fetch(`/api/applications/${applicationId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status }),
+      credentials: 'include'
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'Failed to update status');
+    }
+
+    // Show success message
+    alert(`Application ${status} successfully!`);
+    
+    // Reload the application detail view to show updated status
+    viewApplicationDetail(applicationId);
+    
+  } catch (error) {
+    console.error('Error updating application status:', error);
+    alert('Failed to update status: ' + error.message);
+    
+    // Re-enable buttons - FIXED SELECTORS
+    const approveBtn = document.querySelector(`button[onclick*="'${applicationId}', 'approved'"]`);
+    const rejectBtn = document.querySelector(`button[onclick*="'${applicationId}', 'rejected'"]`);
+    
+    if (approveBtn) {
+      approveBtn.disabled = false;
+      approveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+    if (rejectBtn) {
+      rejectBtn.disabled = false;
+      rejectBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+  }
+}
+
 // ADD THIS NEW FUNCTION HERE - Applications Pagination
 function renderApplicationsPagination(pagination) {
   if (!pagination) return '';
@@ -1525,21 +1582,7 @@ function renderApplicationsList(applications, pagination) {
           <h2 class="text-2xl font-bold">Applications</h2>
           <p class="text-gray-400">Manage mentorship applications</p>
         </div>
-        <div class="flex items-center space-x-2">
-          <div class="relative">
-            <input 
-              type="text" 
-              id="application-search"
-              placeholder="Search applications..." 
-              class="bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 pl-10 focus:outline-none focus:border-purple-600 focus:ring-1 focus:ring-purple-600 w-64"
-            >
-            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
-          </div>
-          <button class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg flex items-center space-x-2">
-            <i class="fas fa-plus"></i>
-            <span>New</span>
-          </button>
-        </div>
+        
       </div>
 
       ${renderApplicationsTable(applications)}
@@ -1741,16 +1784,9 @@ function renderApplicationDetail(application) {
           Back to Applications
         </button>
         <div class="flex space-x-3">
-          <button onclick="downloadApplication('${application._id}')" 
-            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center space-x-2">
-            <i class="fas fa-download"></i>
-            <span>Download PDF</span>
-          </button>
-          <button onclick="deleteApplication('${application._id}')" 
-            class="px-4 py-2 bg-red-900/50 hover:bg-red-800/50 text-red-300 rounded-lg flex items-center space-x-2">
-            <i class="fas fa-trash"></i>
-            <span>Delete</span>
-          </button>
+
+         
+
         </div>
       </div>
     </div>
@@ -3929,6 +3965,7 @@ window.changeUsersPage = changeUsersPage;
 window.loadApplications = loadApplications;
 window.viewApplicationDetail = viewApplicationDetail;
 window.changeApplicationsPage = changeApplicationsPage;
+window.updateApplicationStatus = updateApplicationStatus; // ADD THIS LINE
 
 window.viewUserDetails = viewUserDetails;
 window.applyUserFilters = applyUserFilters;

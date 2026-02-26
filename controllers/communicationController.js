@@ -137,6 +137,9 @@ export const getCommunications = async (req, res) => {
     const type = req.query.type;
     const audience = req.query.audience;
 
+
+    
+
     // Get the MongoDB user
     const user = await getMongoUserFromRequest(req);
     if (!user) {
@@ -311,7 +314,7 @@ export const getCommunicationById = async (req, res) => {
 /**
  * POST /api/communications
  * Create a new communication
- */
+ */ 
 export const createCommunication = async (req, res) => {
   try {
     const {
@@ -325,6 +328,14 @@ export const createCommunication = async (req, res) => {
       sendEmail,
       scheduledFor
     } = req.body;
+
+
+        // 🔥 ADD THIS DEBUG LOG
+    console.log("Received communication data:", {
+      title,
+      audience: audience,
+      roles: audience?.roles
+    });
 
     // Validate required fields
     if (!title || !content || !audience?.type) {

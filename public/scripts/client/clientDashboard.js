@@ -958,6 +958,228 @@ window.loadMoreFeedback = async function() {
 
 
 
+// ============ PROFILE UPDATE FUNCTIONS ============
+
+// Check profile status on load
+async function checkProfileStatus() {
+    try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const response = await fetch(`/api/system/user/profile-status/${encodeURIComponent(user.email)}`, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                // User not in PreLoaded collection - they might be an admin or something
+                console.log("User not found in PreLoaded collection");
+                return;
+            }
+            throw new Error("Failed to check profile status");
+        }
+
+        const data = await response.json();
+        
+        const container = document.getElementById('profileUpdateContainer');
+        const completedBanner = document.getElementById('profileCompletedBanner');
+        
+        if (data.hasCompletedProfile) {
+            // Profile is complete - hide form, show banner
+            container.classList.add('hidden');
+            completedBanner.classList.remove('hidden');
+            
+            // Update banner with user data
+            document.getElementById('displayFaculty').textContent = data.user.faculty;
+            document.getElementById('displayGender').textContent = 
+                data.user.gender === 'male' ? 'Male' : 'Female';
+        } else {
+            // Profile incomplete - show form
+            container.classList.remove('hidden');
+            completedBanner.classList.add('hidden');
+            
+            // Pre-fill gender if it exists
+            if (data.user.gender) {
+                document.getElementById('genderField').value = data.user.gender;
+            }
+        }
+    } catch (error) {
+        console.error("Error checking profile status:", error);
+    }
+}
+
+// Handle profile update form submission
+async function handleProfileUpdate(e) {
+    e.preventDefault();
+    
+    const faculty = document.getElementById('facultyField').value;
+    const gender = document.getElementById('genderField').value;
+    const user = auth.currentUser;
+    
+    if (!faculty || !gender) {
+        showProfileError("Please select both faculty and gender");
+        return;
+    }
+    
+    if (!user) {
+        showProfileError("You must be logged in");
+        return;
+    }
+    
+    // Show loading state
+    const submitBtn = document.getElementById('profileSubmitBtn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+    submitBtn.disabled = true;
+    
+    // Hide any previous messages
+    hideProfileMessages();
+    
+    try {
+        const token = await user.getIdToken();
+        const response = await fetch("/api/system/user/update-profile", {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: user.email,
+                faculty,
+                gender
+            }),
+            credentials: "include"
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to update profile");
+        }
+        
+        // Show success message
+        showProfileSuccess("Profile updated successfully! Refreshing...");
+        
+        // Update user state
+        if (state.user) {
+            state.user.faculty = faculty;
+            state.user.gender = gender;
+            state.user.hasCompletedProfile = true;
+        }
+        
+        // Hide form and show banner after delay
+        setTimeout(() => {
+            document.getElementById('profileUpdateContainer').classList.add('hidden');
+            document.getElementById('profileCompletedBanner').classList.remove('hidden');
+            document.getElementById('displayFaculty').textContent = faculty;
+            document.getElementById('displayGender').textContent = 
+                gender === 'male' ? 'Male' : 'Female';
+            
+            // Refresh the page content (optional)
+            loadTab("home");
+        }, 2000);
+        
+    } catch (error) {
+        console.error("Profile update error:", error);
+        showProfileError(error.message);
+    } finally {
+        // Restore button
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+// Helper functions for profile messages
+function showProfileError(message) {
+    const errorDiv = document.getElementById('profileError');
+    const errorMsg = document.getElementById('profileErrorMessage');
+    errorMsg.textContent = message;
+    errorDiv.classList.remove('hidden');
+    
+    // Hide success if visible
+    document.getElementById('profileSuccess').classList.add('hidden');
+}
+
+function showProfileSuccess(message) {
+    const successDiv = document.getElementById('profileSuccess');
+    const successMsg = document.getElementById('profileSuccessMessage');
+    successMsg.textContent = message;
+    successDiv.classList.remove('hidden');
+    
+    // Hide error if visible
+    document.getElementById('profileError').classList.add('hidden');
+}
+
+function hideProfileMessages() {
+    document.getElementById('profileError').classList.add('hidden');
+    document.getElementById('profileSuccess').classList.add('hidden');
+}
+
+// Edit profile function (from banner)
+window.editProfile = function() {
+    document.getElementById('profileCompletedBanner').classList.add('hidden');
+    document.getElementById('profileUpdateContainer').classList.remove('hidden');
+    
+    // Pre-fill current values
+    const user = state.user;
+    if (user) {
+        document.getElementById('facultyField').value = user.faculty || '';
+        document.getElementById('genderField').value = user.gender || '';
+    }
+    
+    // Scroll to form
+    document.getElementById('profileUpdateContainer').scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+    });
+};
+
+
+
+// auth.onAuthStateChanged(async (user) => {
+//     console.log("🔥 Auth state changed:", user ? `✅ Logged in as ${user.email}` : "❌ Not logged in");
+    
+//     if (!user) {
+//         console.log("No authenticated user, redirecting to login");
+//         window.location.href = "/client-login";
+//         return;
+//     }
+
+//     try {
+//         const token = await user.getIdToken();
+//         const response = await fetch("/api/system/client/me", {
+//             headers: {
+//                 "Authorization": `Bearer ${token}`,
+//                 "Content-Type": "application/json"
+//             },
+//             credentials: "include"
+//         });
+
+//         if (!response.ok) throw new Error("Failed to fetch user data");
+
+//         const data = await response.json();
+//         state.user = data.user;
+//         updateHeader(state.user);
+
+//         // Load communications and feedback
+//         await Promise.all([
+//             fetchCommunications(),
+//             fetchMyFeedback()
+//         ]);
+        
+//         // Load default tab (home)
+//         loadTab("home");
+
+//     } catch (error) {
+//         console.error("Error fetching user data:", error);
+//     }
+// });
+
+
+
 auth.onAuthStateChanged(async (user) => {
     console.log("🔥 Auth state changed:", user ? `✅ Logged in as ${user.email}` : "❌ Not logged in");
     
@@ -983,6 +1205,9 @@ auth.onAuthStateChanged(async (user) => {
         state.user = data.user;
         updateHeader(state.user);
 
+        // Check profile status (NEW)
+        await checkProfileStatus();
+
         // Load communications and feedback
         await Promise.all([
             fetchCommunications(),
@@ -998,6 +1223,15 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 
+// Add profile form submit listener
+document.addEventListener('DOMContentLoaded', () => {
+    const profileForm = document.getElementById('profileUpdateForm');
+    if (profileForm) {
+        profileForm.addEventListener('submit', handleProfileUpdate);
+    }
+});
+
+
 // ============ MAKE FUNCTIONS GLOBALLY AVAILABLE ============
 window.loadTab = loadTab;
 window.viewCommunication = viewCommunication;
@@ -1007,3 +1241,5 @@ window.loadMoreFeedback = loadMoreFeedback;
 window.openFeedbackModal = openFeedbackModal;
 window.closeFeedbackModal = closeFeedbackModal;
 window.setRating = setRating;
+window.editProfile = editProfile; // ADD THIS
+window.handleProfileUpdate = handleProfileUpdate; // ADD THIS

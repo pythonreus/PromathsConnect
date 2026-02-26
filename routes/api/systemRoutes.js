@@ -15,7 +15,8 @@ import {
 } from "../../controllers/systemController.js";
 import { verifyAuthToken } from "../../middleware/authMiddleware.js";
 import { requireAdmin } from "../../middleware/adminMiddleware.js";
-import { requirePreloadedUser } from "../../middleware/requirePreloadedUser.js";
+import { requirePreloadedUser } from "../../middleware/requirePreloadedUser.js"
+import PreLoaded from "../../models/preLoaded.js";
 
 const router = express.Router();
 
@@ -134,5 +135,104 @@ router.delete(
   requireAdmin, 
   deleteAuthorizedEmail
 );
+
+
+// Update user profile endpoint
+router.put('/user/update-profile', async (req, res) => {
+  try {
+    const { email, faculty, gender } = req.body;
+    
+    // Validate required fields
+    if (!email || !faculty || !gender) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email, faculty, and gender are required' 
+      });
+    }
+
+    // Validate faculty enum
+    const validFaculties = ["Science", "EBE", "Humanities", "CLM", "Health Sciences"];
+    if (!validFaculties.includes(faculty)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid faculty value' 
+      });
+    }
+
+    // Validate gender enum
+    const validGenders = ["male", "female"];
+    if (!validGenders.includes(gender)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid gender value' 
+      });
+    }
+
+    // Find and update the user
+    const updatedUser = await PreLoaded.findOneAndUpdate(
+      { email: email.toLowerCase() },
+      { 
+        faculty: faculty,
+        gender: gender,
+        hasCompletedProfile: true 
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'Profile updated successfully',
+      user: updatedUser
+    });
+
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error' 
+    });
+  }
+});
+
+// Get user profile status
+router.get('/user/profile-status/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    
+    const user = await PreLoaded.findOne({ email: email.toLowerCase() });
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+
+    res.json({ 
+      success: true,
+      hasCompletedProfile: user.hasCompletedProfile || false,
+      user: {
+        email: user.email,
+        role: user.role,
+        gender: user.gender,
+        faculty: user.faculty
+      }
+    });
+
+  } catch (error) {
+    console.error('Error checking profile status:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error' 
+    });
+  }
+});
 
 export default router;

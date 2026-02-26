@@ -1,4 +1,3 @@
-// models/PreLoaded.js
 import mongoose from "mongoose";
 
 const preLoadedSchema = new mongoose.Schema({
@@ -19,6 +18,15 @@ const preLoadedSchema = new mongoose.Schema({
     enum: ["male", "female"],
     required: true,
   },
+  faculty: {
+    type: String,
+    enum: ["Science", "EBE", "Humanities", "CLM", "Health Sciences"],
+    required: false, // Set to false initially since it's being added
+  },
+  hasCompletedProfile: {
+    type: Boolean,
+    default: false, // Track if user has completed their profile
+  }
 }, {
   timestamps: true
 });

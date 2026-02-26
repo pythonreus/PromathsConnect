@@ -1,6 +1,8 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import { verifyAuthToken } from "../middleware/authMiddleware.js";
+import { requireAdmin } from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
 
@@ -30,7 +32,7 @@ router.get("/client-login", (req, res) => {
 });
 
 // client login page
-router.get("/client-dashboard", (req, res) => {
+router.get("/client-dashboard",verifyAuthToken, (req, res) => {
   console.log("I got hit");
   res.sendFile(
     path.join(__dirname, "..", "public", "pages", "client", "client-dashboard.html")
@@ -38,14 +40,14 @@ router.get("/client-dashboard", (req, res) => {
 });
 
 // Admin dashboard shell
-router.get("/admin", (req, res) => {
+router.get("/admin",verifyAuthToken,requireAdmin, (req, res) => {
   res.sendFile(
     path.join(__dirname, "..", "public", "pages", "admin", "admin-dashboard.html")
   );
 });
 
 // Admin tabs (dashboard, applications, system, users, settings)
-router.get("/admin/:tab", (req, res) => {
+router.get("/admin/:tab",verifyAuthToken, requireAdmin, (req, res) => {
   const tab = req.params.tab;
 
   const tabPath = path.join(

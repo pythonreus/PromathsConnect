@@ -13,6 +13,8 @@ router.get("/:id",verifyAuthToken,requireAdmin, getApplicationById);
 // Add to routes
 router.patch("/:id/status", verifyAuthToken, requireAdmin, updateApplicationStatus);
 
+
+
 export default router;
 
 
