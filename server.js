@@ -17,13 +17,13 @@ const startServer = async () => {
     
 
      // Import preloaded users CSV
-    try {
-        //await importPreLoadedCSV();
-        //await importMenteeCSV();
-        await addApprovedMentorsToPreLoaded();
-    } catch (err) {
-        console.error("Failed to import preloaded CSV", err);
-    }
+    // try {
+    //     //await importPreLoadedCSV();
+    //     //await importMenteeCSV();
+    //     await addApprovedMentorsToPreLoaded();
+    // } catch (err) {
+    //     console.error("Failed to import preloaded CSV", err);
+    // }
 
     app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

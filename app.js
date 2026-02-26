@@ -10,6 +10,8 @@ import systemRoutes from "./routes/api/systemRoutes.js";
 import communicationRoutes from "./routes/api/communicationRoutes.js";
 import feedbackRoutes from "./routes/api/feedbackRoutes.js";
 import pageRoutes from "./routes/pageRoutes.js";
+import contractRoutes from "./routes/api/contractRoutes.js";
+
 
 const app = express();
 
@@ -33,6 +35,7 @@ app.use("/api/applications", applicationRoutes);
 app.use("/api/system", systemRoutes);
 app.use("/api/communications",communicationRoutes);
 app.use("/api/feedback",feedbackRoutes);
+app.use("/api/contracts", contractRoutes);
 
 
 // Page routes (HTML)

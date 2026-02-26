@@ -3947,6 +3947,615 @@ async function deleteCommunicationPrompt(id, title) {
   }
 }
 
+
+// Contracts
+
+// ============ CONTRACTS TAB ============
+const contractsState = {
+    loading: false,
+    contracts: [],
+    selectedRole: null,
+    agreements: [],
+    currentView: 'list' // 'list', 'role-details'
+};
+
+// Add to your tabs object
+tabs.contracts = {
+    load: loadContractsTab
+};
+
+async function loadContractsTab() {
+    try {
+        contractsState.loading = true;
+        contractsState.currentView = 'list';
+        
+        tabContent.innerHTML = `
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                <div class="flex items-center justify-center h-64">
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                        <p class="text-gray-400">Loading contracts...</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const response = await fetch('/api/contracts/admin/all', {
+            credentials: 'include'
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch contracts');
+
+        const data = await response.json();
+        
+        if (data.success) {
+            contractsState.contracts = data.data;
+            renderContractsList();
+        }
+    } catch (error) {
+        tabContent.innerHTML = `
+            <div class="bg-red-900/50 border border-red-700 p-4 rounded-lg">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-exclamation-circle text-red-400"></i>
+                    <h3 class="font-bold">Failed to load contracts</h3>
+                </div>
+                <p class="text-gray-300 mt-2">${error.message}</p>
+                <button onclick="loadContractsTab()" class="mt-3 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded">
+                    Try Again
+                </button>
+            </div>
+        `;
+    } finally {
+        contractsState.loading = false;
+    }
+}
+
+async function renderContractsList() {
+    const contracts = contractsState.contracts;
+    
+    // Await the recent signatures
+    const recentSignaturesHtml = await renderRecentSignatures();
+    
+    tabContent.innerHTML = `
+        <div class="space-y-6">
+            <!-- Header -->
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold">Contract Management</h2>
+                        <p class="text-gray-400">View and manage mentor and mentee contracts</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <button onclick="showEditContract('mentor')" 
+                            class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg flex items-center space-x-2">
+                            <i class="fas fa-edit"></i>
+                            <span>Edit Mentor Contract</span>
+                        </button>
+                        <button onclick="showEditContract('mentee')" 
+                            class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg flex items-center space-x-2">
+                            <i class="fas fa-edit"></i>
+                            <span>Edit Mentee Contract</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contracts Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                ${contracts.map(contract => `
+                    <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+                        <!-- Header -->
+                        <div class="p-6 border-b border-gray-700 bg-gray-900/50">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-xl font-bold capitalize">${contract.role} Contract</h3>
+                                    <p class="text-sm text-gray-400">Version: ${contract.version}</p>
+                                </div>
+                                <span class="px-3 py-1 rounded-full text-sm ${contract.isActive ? 'bg-green-900/30 text-green-400' : 'bg-gray-700 text-gray-400'}">
+                                    ${contract.isActive ? 'Active' : 'Inactive'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="p-6 space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-gray-900/30 p-3 rounded-lg text-center">
+                                    <p class="text-2xl font-bold text-green-400">${contract.stats?.agreed || 0}</p>
+                                    <p class="text-xs text-gray-400">Signed</p>
+                                </div>
+                                <div class="bg-gray-900/30 p-3 rounded-lg text-center">
+                                    <p class="text-2xl font-bold text-yellow-400">${(contract.stats?.total || 0) - (contract.stats?.agreed || 0)}</p>
+                                    <p class="text-xs text-gray-400">Pending</p>
+                                </div>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-400">Completion</span>
+                                    <span class="font-medium">${contract.stats?.percentage || 0}%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-2">
+                                    <div class="bg-gradient-to-r from-purple-600 to-blue-600 h-2 rounded-full" 
+                                         style="width: ${contract.stats?.percentage || 0}%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex space-x-2 pt-2">
+                                <button onclick="viewContractDetails('${contract.role}')" 
+                                    class="flex-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm">
+                                    View Signatures
+                                </button>
+                                <button onclick="showEditContract('${contract.role}')" 
+                                    class="flex-1 px-3 py-2 bg-purple-700 hover:bg-purple-600 rounded-lg text-sm">
+                                    Edit Contract
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-history text-purple-400 mr-2"></i>
+                    Recent Signatures
+                </h3>
+                
+                <div class="space-y-3">
+                    ${recentSignaturesHtml}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+async function renderRecentSignatures() {
+    try {
+        // Fetch recent signatures from all roles
+        const roles = ['mentor', 'mentee'];
+        let allAgreements = [];
+        
+        for (const role of roles) {
+            const response = await fetch(`/api/contracts/admin/agreements/${role}`, {
+                credentials: 'include'
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    allAgreements = [...allAgreements, ...data.data];
+                }
+            }
+        }
+        
+        // Sort by date and take latest 5
+        const recent = allAgreements
+            .sort((a, b) => new Date(b.agreedAt) - new Date(a.agreedAt))
+            .slice(0, 5);
+        
+        if (recent.length === 0) {
+            return `<p class="text-gray-400 text-center py-4">No signatures yet</p>`;
+        }
+        
+        return recent.map(agreement => `
+            <div class="bg-gray-900/30 p-3 rounded-lg flex justify-between items-center">
+                <div>
+                    <p class="font-medium">${agreement.user?.fullName || 'N/A'}</p>
+                    <p class="text-sm text-gray-400">${agreement.user?.email || 'N/A'}</p>
+                </div>
+                <div class="text-right">
+                    <span class="px-2 py-1 rounded-full text-xs ${agreement.role === 'mentor' ? 'bg-blue-900/30 text-blue-300' : 'bg-green-900/30 text-green-300'}">
+                        ${agreement.role}
+                    </span>
+                    <p class="text-xs text-gray-500 mt-1">${new Date(agreement.agreedAt).toLocaleDateString()}</p>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        return `<p class="text-gray-400 text-center py-4">Failed to load recent signatures</p>`;
+    }
+}
+
+async function viewContractDetails(role) {
+    try {
+        contractsState.currentView = 'role-details';
+        contractsState.selectedRole = role;
+        
+        tabContent.innerHTML = `
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                <div class="flex items-center justify-center h-64">
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                        <p class="text-gray-400">Loading ${role} signatures...</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const response = await fetch(`/api/contracts/admin/agreements/${role}`, {
+            credentials: 'include'
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch signatures');
+
+        const data = await response.json();
+        
+        if (data.success) {
+            renderRoleDetails(role, data.data);
+        }
+    } catch (error) {
+        tabContent.innerHTML = `
+            <div class="bg-red-900/50 border border-red-700 p-4 rounded-lg">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-exclamation-circle text-red-400"></i>
+                    <h3 class="font-bold">Failed to load signatures</h3>
+                </div>
+                <p class="text-gray-300 mt-2">${error.message}</p>
+                <button onclick="loadContractsTab()" class="mt-3 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded">
+                    Back to Contracts
+                </button>
+            </div>
+        `;
+    }
+}
+
+function renderRoleDetails(role, agreements) {
+    const contract = contractsState.contracts.find(c => c.role === role);
+    
+    tabContent.innerHTML = `
+        <div class="bg-gray-800 rounded-lg border border-gray-700">
+            <!-- Header -->
+            <div class="p-6 border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <button onclick="loadContractsTab()" class="p-2 hover:bg-gray-700 rounded-lg">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div>
+                        <h2 class="text-2xl font-bold capitalize">${role} Contract Signatures</h2>
+                        <p class="text-gray-400">Version: ${contract?.version || 'N/A'}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Summary -->
+            <div class="p-6 border-b border-gray-700 bg-gray-900/30">
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-green-400">${agreements.length}</p>
+                        <p class="text-sm text-gray-400">Total Signed</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-yellow-400">${contract?.stats?.total || 0}</p>
+                        <p class="text-sm text-gray-400">Total ${role}s</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-blue-400">${contract?.stats?.percentage || 0}%</p>
+                        <p class="text-sm text-gray-400">Completion Rate</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signatures List -->
+            <div class="p-6">
+                <h3 class="text-lg font-bold mb-4">Users Who Signed</h3>
+                
+                ${agreements.length === 0 ? `
+                    <div class="text-center py-8 text-gray-400">
+                        <i class="fas fa-file-signature text-4xl mb-3"></i>
+                        <p>No ${role} has signed the contract yet</p>
+                    </div>
+                ` : `
+                    <div class="space-y-3">
+                        ${agreements.map(agreement => `
+                            <div class="bg-gray-900/30 p-4 rounded-lg border border-gray-700">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="font-medium">${agreement.user?.fullName || 'N/A'}</p>
+                                        <p class="text-sm text-gray-400">${agreement.user?.email || 'N/A'}</p>
+                                        <p class="text-xs text-gray-500 mt-1">Joined: ${agreement.user?.dateJoined ? new Date(agreement.user.dateJoined).toLocaleDateString() : 'N/A'}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm text-green-400">Signed</p>
+                                        <p class="text-xs text-gray-500">${new Date(agreement.agreedAt).toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `}
+            </div>
+
+            <!-- Export Button -->
+            <div class="p-6 border-t border-gray-700">
+                <button onclick="exportAgreements('${role}')" 
+                    class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center space-x-2">
+                    <i class="fas fa-download"></i>
+                    <span>Export as CSV</span>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function showEditContract(role) {
+    const contract = contractsState.contracts.find(c => c.role === role);
+    const content = contract?.content || getDefaultContract(role);
+    
+    const modalHtml = `
+        <div id="edit-contract-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-lg border border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                <div class="sticky top-0 bg-gray-800 p-6 border-b border-gray-700 flex justify-between items-start">
+                    <div>
+                        <h3 class="text-xl font-bold capitalize">Edit ${role} Contract</h3>
+                        <p class="text-gray-400 text-sm">Current Version: ${contract?.version || '1.0.0'}</p>
+                    </div>
+                    <button onclick="closeModal()" class="p-2 hover:bg-gray-700 rounded-lg">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="edit-contract-form" class="p-6 space-y-6">
+                    <input type="hidden" id="contract-role" value="${role}">
+                    
+                    <div>
+                        <label class="block text-gray-300 text-sm mb-2">Contract Title</label>
+                        <input 
+                            type="text" 
+                            id="contract-title"
+                            value="${contract?.title || (role === 'mentor' ? 'Mentor Agreement' : 'Mentee Agreement')}"
+                            class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 focus:border-purple-600"
+                            required
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-300 text-sm mb-2">Contract Content</label>
+                        <textarea 
+                            id="contract-content"
+                            rows="20"
+                            class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 font-mono text-sm focus:border-purple-600"
+                            required
+                        >${content}</textarea>
+                        <p class="text-xs text-gray-500 mt-1">You can edit the contract content above. Line breaks will be preserved.</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-300 text-sm mb-2">Version</label>
+                        <input 
+                            type="text" 
+                            id="contract-version"
+                            value="${contract?.version || '1.0.0'}"
+                            class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 focus:border-purple-600"
+                        >
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <input 
+                            type="checkbox" 
+                            id="contract-active"
+                            ${contract?.isActive !== false ? 'checked' : ''}
+                            class="w-4 h-4 text-purple-600 rounded"
+                        >
+                        <label for="contract-active" class="text-gray-300">Active (users can see and sign)</label>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 pt-6 border-t border-gray-700">
+                        <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    document.getElementById('edit-contract-form').addEventListener('submit', handleContractUpdate);
+}
+
+function getDefaultContract(role) {
+    if (role === 'mentor') {
+        return `WITS ProMaths Alumni Mentoring Program
+Mentor Agreement (2026)
+
+This agreement is entered into between the WITS ProMaths Alumni Academic Office and:
+
+Mentor Name & Surname: ___________________________________________
+
+1. Purpose
+The purpose of this agreement is to define the roles, responsibilities, professional standards, and expectations applicable to mentors participating in the WITS ProMaths Alumni Mentoring Program.
+
+2. Nature of Appointment
+Participation in the Program does not constitute employment with the Program or with the University of the Witwatersrand unless expressly confirmed in writing through a separate formal employment contract. Participation does not entitle mentors to salary, employee benefits, overtime compensation, or employment-related claims unless formally appointed in writing.
+
+3. Roles and Responsibilities
+The Mentor agrees to:
+• Provide academic guidance, motivation, and appropriate psychosocial support.
+• Conduct regular mentorship sessions as scheduled.
+• Assist mentees with goal setting, time management, and adaptation to university life.
+• Monitor progress and submit required reports within stipulated deadlines.
+• Refer mentees to appropriate university support services where necessary.
+• Uphold the values, standards, and reputation of the Program and the University.
+• Maintain professional, respectful, and ethical conduct always.
+• Report the mentee to the correct officials if they show signs of self-harm or wanting to harm others.
+
+4. Commitment
+The Mentor commits to:
+• Active participation during assigned duty weeks.
+• Attending mandatory meetings, briefings, and training sessions.
+• Communicating consistently and responsibly with mentees and coordinators.
+• Being reasonably accessible and responsive within agreed timeframes.
+
+5. Code of Conduct
+The Mentor shall:
+• Maintain confidentiality except where disclosure is required by law or risk of harm exists.
+• Treat all students fairly and without discrimination.
+• Maintain professional boundaries and avoid inappropriate or exploitative relationships.
+• Refrain from harassment, coercion, or abuse of position.
+• Not record sessions without prior informed consent of all parties.
+• Conduct themselves in a manner reflecting positively on the Program and University.
+
+6. Reporting Obligations
+The Mentor must promptly report safeguarding concerns, harassment, academic misconduct, risks to student wellbeing, or breaches of the Code of Conduct.
+
+7. Termination and Suspension
+• The Program reserves the right to suspend or terminate this agreement for non-compliance or misconduct.
+• Any decision to suspend or terminate participation will follow a fair review process, including consideration of the circumstances and, where appropriate, an opportunity for the Tutor to respond.
+
+8. Acceptance
+"I acknowledge that I have read, understood, and agree to comply with the terms of this Mentor Agreement and the Program Code of Conduct."
+
+Signature: ___________________________________________
+Date: _______________________________________________`;
+    } else {
+        return `WITS ProMaths Alumni Tutoring Program – Tutee and Mentee Agreement (2026)
+
+This agreement is between WITS ProMaths Alumni Academic Office and:
+
+Student's Name: _________________________
+
+1. Purpose
+• To ensure commitment to academic improvement through tutoring support and also provide you with a community within your degree.
+• To support the academic, social, and personal development of first-year students with the help of seniors.
+
+2. Responsibilities of the First-Year Student
+The student agrees to:
+• Attend tutoring sessions regularly.
+• Come prepared with questions or topics.
+• Complete assigned work and practice activities.
+• Communicate difficulties early.
+• Respect tutors and peers.
+• Attend scheduled mentorship sessions.
+• Participate actively in discussions and activities.
+• Communicate challenges and progress honestly.
+• Respect mentors and peers.
+• Complete required reflections and tasks
+
+3. Conduct
+The student agrees to:
+• Maintain respectful behavior.
+• Follow the program's guidelines.
+• Avoid disruptive behavior.
+• Be respectful to everyone and cooperative.
+• Maintain appropriate boundaries.
+• Report any of the senior students if they are violating any boundaries, not maintaining a professional environment, or making you feel uncomfortable.
+• Follow the rules of the program and university policies.
+
+4. Termination
+• The Program reserves the right to suspend or terminate this agreement in cases of non-compliance, negligence, breach of confidentiality, misconduct, or failure to perform duties.
+• Any decision to suspend or terminate participation will follow a fair review process, including consideration of the circumstances and, where appropriate, an opportunity for the student to respond
+
+5. Acceptance
+Signature: _________________________
+Date: _________________________`;
+    }
+}
+
+async function handleContractUpdate(e) {
+    e.preventDefault();
+    
+    const role = document.getElementById('contract-role').value;
+    const title = document.getElementById('contract-title').value;
+    const content = document.getElementById('contract-content').value;
+    const version = document.getElementById('contract-version').value;
+    const isActive = document.getElementById('contract-active').checked;
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+    submitBtn.disabled = true;
+    
+    try {
+        const response = await fetch('/api/contracts/admin/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                role,
+                title,
+                content,
+                version,
+                isActive
+            }),
+            credentials: 'include'
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) throw new Error(data.message || 'Failed to update contract');
+        
+        alert('Contract updated successfully!');
+        closeModal();
+        loadContractsTab();
+        
+    } catch (error) {
+        alert(error.message);
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+async function exportAgreements(role) {
+    try {
+        const response = await fetch(`/api/contracts/admin/agreements/${role}`, {
+            credentials: 'include'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Convert to CSV
+            const csv = convertToCSV(data.data);
+            
+            // Download
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${role}-signatures-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    } catch (error) {
+        alert('Failed to export: ' + error.message);
+    }
+}
+
+function convertToCSV(agreements) {
+    const headers = ['Name', 'Email', 'Role', 'Signed Date', 'User Joined Date'];
+    const rows = agreements.map(a => [
+        a.user?.fullName || 'N/A',
+        a.user?.email || 'N/A',
+        a.role || 'N/A',
+        new Date(a.agreedAt).toLocaleString(),
+        a.user?.dateJoined ? new Date(a.user.dateJoined).toLocaleDateString() : 'N/A'
+    ]);
+    
+    return [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+}
+
+// Make functions globally available
+window.loadContractsTab = loadContractsTab;
+window.viewContractDetails = viewContractDetails;
+window.showEditContract = showEditContract;
+window.exportAgreements = exportAgreements;
+
+
+
+// End of contracts
+
 // ============ GLOBAL FUNCTIONS ============
 window.loadCommunications = loadCommunications;
 window.showCreateCommunication = showCreateCommunication;

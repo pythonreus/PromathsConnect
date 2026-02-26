@@ -316,6 +316,7 @@ export const getCommunicationById = async (req, res) => {
  * Create a new communication
  */ 
 export const createCommunication = async (req, res) => {
+  console.log("🔥 createCommunication email trigger");
   try {
     const {
       title,
@@ -627,6 +628,7 @@ export const deleteCommunication = async (req, res) => {
  * Send email for a communication (called from route) - UPDATED FOR BCC
  */
 export const sendCommunicationEmail = async (req, res) => {
+  console.log("🔥 sendCommunicationEmail route triggered");
   try {
     const { id } = req.params;
 
@@ -989,7 +991,25 @@ async function getTargetUsers(audience) {
   }));
 
   // Combine both lists
-  return [...registeredUsers, ...formattedPreloaded];
+  // return [...registeredUsers, ...formattedPreloaded];
+
+  // Combine both lists
+  const combined = [...registeredUsers, ...formattedPreloaded];
+
+  // Remove duplicates by email
+  const uniqueUsersMap = new Map();
+
+  for (const user of combined) {
+    // Normalize email to avoid case issues
+    const emailKey = user.email.trim().toLowerCase();
+
+    // If duplicate exists, prefer REGISTERED user over preloaded
+    if (!uniqueUsersMap.has(emailKey) || user.isPreloaded !== true) {
+      uniqueUsersMap.set(emailKey, user);
+    }
+  }
+
+  return Array.from(uniqueUsersMap.values());
 }
 
 // async function checkUserAccess(communication, user) {

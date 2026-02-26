@@ -133,10 +133,17 @@ async function fetchCommunications(page = 1, limit = 10) {
 }
 
 // ============ TAB SYSTEM ============
+// const tabs = {
+//     home: { load: loadHome },
+//     communications: { load: loadCommunicationsTab },
+//     feedback: { load: loadFeedbackTab }
+// };
+
 const tabs = {
     home: { load: loadHome },
     communications: { load: loadCommunicationsTab },
-    feedback: { load: loadFeedbackTab }
+    feedback: { load: loadFeedbackTab },
+    contract: { load: loadContractTab }  // Add this line
 };
 
 async function loadTab(tabName) {
@@ -1232,6 +1239,212 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+// ============ CONTRACT TAB ============
+const contractState = {
+    contract: null,
+    hasAgreed: false,
+    agreedAt: null,
+    loading: false
+};
+
+// Add to your tabs object (find the tabs object around line 80-90)
+// Update your tabs object to include:
+tabs.contract = {
+    load: loadContractTab
+};
+
+async function loadContractTab() {
+    try {
+        contractState.loading = true;
+        
+        tabContent.innerHTML = `
+            <div class="flex justify-center items-center h-64">
+                <div class="text-center">
+                    <div class="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p class="text-gray-400">Loading contract...</p>
+                </div>
+            </div>
+        `;
+
+        const response = await fetch('/api/contracts/my-contract', {
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                renderNoContract();
+                return;
+            }
+            throw new Error('Failed to load contract');
+        }
+
+        const data = await response.json();
+        
+        if (data.success) {
+            contractState.contract = data.data.contract;
+            contractState.hasAgreed = data.data.hasAgreed;
+            contractState.agreedAt = data.data.agreedAt;
+            
+            renderContractTab();
+            
+            // Update badge
+            updateContractBadge();
+        }
+    } catch (error) {
+        tabContent.innerHTML = `
+            <div class="bg-red-900/50 p-4 rounded-lg">
+                <p class="text-red-300">Error: ${error.message}</p>
+                <button onclick="loadContractTab()" class="mt-2 px-4 py-2 bg-gray-700 rounded">
+                    Try Again
+                </button>
+            </div>
+        `;
+    } finally {
+        contractState.loading = false;
+    }
+}
+
+function renderNoContract() {
+    tabContent.innerHTML = `
+        <div class="bg-gray-800 rounded-lg p-8 text-center">
+            <i class="fas fa-file-contract text-5xl text-gray-600 mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">No Contract Available</h3>
+            <p class="text-gray-400">There's no active contract for your role at this time.</p>
+        </div>
+    `;
+}
+
+function renderContractTab() {
+    const { contract, hasAgreed, agreedAt } = contractState;
+    
+    tabContent.innerHTML = `
+        <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+            <!-- Header -->
+            <div class="p-6 border-b border-gray-700 bg-gray-900/50">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold">${contract.role === 'mentor' ? 'Mentor Agreement' : 'Mentee Agreement'}</h2>
+                        <p class="text-gray-400 text-sm">Version: ${contract.version}</p>
+                    </div>
+                    ${hasAgreed ? `
+                        <div class="bg-green-900/30 text-green-400 px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            <span>Signed on ${new Date(agreedAt).toLocaleDateString()}</span>
+                        </div>
+                    ` : `
+                        <div class="bg-yellow-900/30 text-yellow-400 px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-clock mr-2"></i>
+                            <span>Pending Signature</span>
+                        </div>
+                    `}
+                </div>
+            </div>
+
+            <!-- Contract Content -->
+            <div class="p-8 max-h-96 overflow-y-auto bg-gray-900/30">
+                <div class="prose prose-invert">
+                    ${contract.content.split('\n').map(p => 
+                        p.trim() ? `<p class="mb-4 text-gray-300">${p}</p>` : ''
+                    ).join('')}
+                </div>
+            </div>
+
+            <!-- Footer with Agreement -->
+            <div class="p-6 border-t border-gray-700 bg-gray-900/50">
+                ${!hasAgreed ? `
+                    <form id="contractAgreementForm" class="space-y-4">
+                        <label class="flex items-start space-x-3 cursor-pointer">
+                            <input type="checkbox" id="agreeCheckbox" class="mt-1 w-5 h-5 text-purple-600 rounded" required>
+                            <span class="text-gray-300">
+                                I have read and agree to the terms of this ${contract.role} contract
+                            </span>
+                        </label>
+                        
+                        <button type="submit" id="submitContractBtn"
+                            class="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg font-medium disabled:opacity-50">
+                            I Agree & Sign Contract
+                        </button>
+                    </form>
+                ` : `
+                    <div class="flex items-center text-green-400">
+                        <i class="fas fa-check-circle text-2xl mr-3"></i>
+                        <div>
+                            <p class="font-medium">You have signed this contract</p>
+                            <p class="text-sm text-gray-400">Signed on ${new Date(agreedAt).toLocaleString()}</p>
+                        </div>
+                    </div>
+                `}
+            </div>
+        </div>
+    `;
+
+    // Add form handler if not signed
+    if (!hasAgreed) {
+        document.getElementById('contractAgreementForm').addEventListener('submit', handleContractAgreement);
+    }
+}
+
+async function handleContractAgreement(e) {
+    e.preventDefault();
+    
+    if (!document.getElementById('agreeCheckbox').checked) {
+        alert('Please check the box to confirm your agreement');
+        return;
+    }
+    
+    const submitBtn = document.getElementById('submitContractBtn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+    submitBtn.disabled = true;
+    
+    try {
+        const response = await fetch('/api/contracts/agree', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contractId: contractState.contract._id }),
+            credentials: 'include'
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) throw new Error(data.message);
+        
+        // Show success
+        alert('Contract signed successfully!');
+        
+        // Update state
+        contractState.hasAgreed = true;
+        contractState.agreedAt = new Date();
+        
+        // Update badge
+        updateContractBadge();
+        
+        // Reload to show signed state
+        loadContractTab();
+        
+    } catch (error) {
+        alert(error.message);
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+function updateContractBadge() {
+    const badge = document.getElementById('contractStatusBadge');
+    if (badge) {
+        if (contractState.hasAgreed) {
+            badge.classList.add('hidden');
+        } else if (contractState.contract) {
+            badge.classList.remove('hidden');
+            badge.textContent = 'Sign';
+        }
+    }
+}
+
+// Make function globally available
+window.loadContractTab = loadContractTab;
+
+
 // ============ MAKE FUNCTIONS GLOBALLY AVAILABLE ============
 window.loadTab = loadTab;
 window.viewCommunication = viewCommunication;
@@ -1243,3 +1456,6 @@ window.closeFeedbackModal = closeFeedbackModal;
 window.setRating = setRating;
 window.editProfile = editProfile; // ADD THIS
 window.handleProfileUpdate = handleProfileUpdate; // ADD THIS
+// Add to the existing window exports
+window.loadContractTab = loadContractTab;
+window.handleContractAgreement = handleContractAgreement;
