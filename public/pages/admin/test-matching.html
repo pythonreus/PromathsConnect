@@ -29,10 +29,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>🧠 Mentor-Mentee Matching Algorithm Test</h1>
+        <h1>Mentor-Mentee Matching Algorithm Test</h1>
         
         <button onclick="runMatching()">▶ Run Matching Algorithm</button>
-        <button onclick="getStats()" style="margin-left: 10px;">📊 Get Stats</button>
+        <button onclick="getStats()" style="margin-left: 10px;">Get Stats</button>
         
         <div id="stats" class="stats"></div>
         <div id="results"></div>
@@ -43,7 +43,7 @@
             document.getElementById('results').innerHTML = '<p>Running algorithm...</p>';
             
             try {
-                const res = await fetch('http://localhost:3000/api/matching/run', {
+                const res = await fetch('/api/matching/run', {
                     method: 'POST',
                     credentials: 'include'
                 });
@@ -62,7 +62,7 @@
 
         async function getStats() {
             try {
-                const res = await fetch('http://localhost:3000/api/matching/stats', {
+                const res = await fetch('/api/matching/stats', {
                     credentials: 'include'
                 });
                 
@@ -79,7 +79,7 @@
         function displayStats(stats) {
             const statsDiv = document.getElementById('stats');
             statsDiv.innerHTML = `
-                <h2>📊 Current Statistics</h2>
+                <h2>Current Statistics</h2>
                 <p><strong>Total Mentors:</strong> ${stats.totals.mentors} (${stats.totals.registeredMentors} registered, ${stats.totals.preloadedMentors} pending)</p>
                 <p><strong>Total Mentees:</strong> ${stats.totals.mentees} (${stats.totals.registeredMentees} registered, ${stats.totals.preloadedMentees} pending)</p>
                 <p><strong>Estimated Groups:</strong> ~${stats.estimatedGroups} mentees per mentor</p>
@@ -100,12 +100,12 @@
 
             
             let html = `
-                <h2>✅ Matching Results</h2>
+                <h2>Matching Results</h2>
                 <p><strong>${data.stats.matchedMentees}</strong> mentees matched to <strong>${data.stats.totalMentors}</strong> mentors</p>
                 <p><strong>${data.stats.unassignedMentees}</strong> mentees unassigned</p>
                 <p><strong>Average:</strong> ${data.stats.averagePerMentor} mentees per mentor</p>
                 
-                <h3>📋 Mentor Assignments:</h3>
+                <h3>📋Mentor Assignments:</h3>
             `;
             
             data.matches.forEach(group => {
