@@ -1,0 +1,144 @@
+<!-- public/test-matching.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Matching Algorithm Test</title>
+    <style>
+        body { font-family: Arial; background: #1a1a1a; color: #fff; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        button { padding: 10px 20px; background: #7c3aed; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        pre { background: #2d2d2d; padding: 15px; border-radius: 5px; overflow: auto; }
+        .stats { background: #2d2d2d; padding: 20px; border-radius: 5px; margin: 20px 0; }
+        .mentor-group { background: #333; margin: 10px 0; padding: 15px; border-left: 4px solid #7c3aed; }
+        .mentee { margin-left: 20px; padding: 5px; border-left: 2px solid #4a4a4a; }
+        .faculty-badge { background: #4a4a4a; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 10px; }
+        .gender-badge { 
+            display: inline-block; 
+            width: 20px; 
+            height: 20px; 
+            border-radius: 50%; 
+            text-align: center; 
+            line-height: 20px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        .male { background: #3b82f6; }
+        .female { background: #ec4899; }
+        .unspecified { background: #6b7280; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Mentor-Mentee Matching Algorithm Test</h1>
+        
+        <button onclick="runMatching()">▶ Run Matching Algorithm</button>
+        <button onclick="getStats()" style="margin-left: 10px;">📊 Get Stats</button>
+        
+        <div id="stats" class="stats"></div>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function runMatching() {
+            document.getElementById('results').innerHTML = '<p>Running algorithm...</p>';
+            
+            try {
+                const res = await fetch('http://localhost:3000/api/matching/run', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    document.getElementById('results').innerHTML = `<p style="color: red;">Error: ${data.message}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('results').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function getStats() {
+            try {
+                const res = await fetch('http://localhost:3000/api/matching/stats', {
+                    credentials: 'include'
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    displayStats(data.data);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function displayStats(stats) {
+            const statsDiv = document.getElementById('stats');
+            statsDiv.innerHTML = `
+                <h2>📊 Current Statistics</h2>
+                <p><strong>Total Mentors:</strong> ${stats.totals.mentors} (${stats.totals.registeredMentors} registered, ${stats.totals.preloadedMentors} pending)</p>
+                <p><strong>Total Mentees:</strong> ${stats.totals.mentees} (${stats.totals.registeredMentees} registered, ${stats.totals.preloadedMentees} pending)</p>
+                <p><strong>Estimated Groups:</strong> ~${stats.estimatedGroups} mentees per mentor</p>
+                
+                <h3>Faculty Distribution:</h3>
+                <p><strong>Mentors:</strong> ${JSON.stringify(stats.facultyDistribution.mentors, null, 2)}</p>
+                <p><strong>Mentees:</strong> ${JSON.stringify(stats.facultyDistribution.mentees, null, 2)}</p>
+                
+                <h3>Gender Distribution:</h3>
+                <p><strong>Mentors:</strong> M:${stats.genderDistribution.mentors.male} F:${stats.genderDistribution.mentors.female} ?:${stats.genderDistribution.mentors.unspecified}</p>
+                <p><strong>Mentees:</strong> M:${stats.genderDistribution.mentees.male} F:${stats.genderDistribution.mentees.female} ?:${stats.genderDistribution.mentees.unspecified}</p>
+            `;
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            console.log("Full mentor data:", data.matches[0].mentor); 
+
+            
+            let html = `
+                <h2>✅ Matching Results</h2>
+                <p><strong>${data.stats.matchedMentees}</strong> mentees matched to <strong>${data.stats.totalMentors}</strong> mentors</p>
+                <p><strong>${data.stats.unassignedMentees}</strong> mentees unassigned</p>
+                <p><strong>Average:</strong> ${data.stats.averagePerMentor} mentees per mentor</p>
+                
+                <h3>📋 Mentor Assignments:</h3>
+            `;
+            
+            data.matches.forEach(group => {
+                const maleCount = group.mentees.filter(m => m.gender === 'male').length;
+                const femaleCount = group.mentees.filter(m => m.gender === 'female').length;
+                
+                html += `
+                    <div class="mentor-group">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <strong>👤 ${group.mentor.fullName}</strong>
+                            <span class="faculty-badge">${group.mentor.faculty}</span>
+                            <span class="gender-badge ${group.mentor.gender === 'male' ? 'male' : group.mentor.gender === 'female' ? 'female' : 'unspecified'}">
+                                ${group.mentor.gender === 'male' ? '♂' : group.mentor.gender === 'female' ? '♀' : '?'}
+                            </span>
+                        </div>
+                        <p style="margin: 5px 0; color: #aaa;">${group.mentees.length} mentees (♂:${maleCount} ♀:${femaleCount})</p>
+                        <div style="margin-top: 10px;">
+                            ${group.mentees.map((mentee, i) => `
+                                <div class="mentee">
+                                    <span>${i+1}. ${mentee.fullName}</span>
+                                    <span class="faculty-badge">${mentee.faculty}</span>
+                                    <span class="gender-badge ${mentee.gender === 'male' ? 'male' : mentee.gender === 'female' ? 'female' : 'unspecified'}">
+                                        ${mentee.gender === 'male' ? '♂' : mentee.gender === 'female' ? '♀' : '?'}
+                                    </span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

@@ -11,6 +11,11 @@ import communicationRoutes from "./routes/api/communicationRoutes.js";
 import feedbackRoutes from "./routes/api/feedbackRoutes.js";
 import pageRoutes from "./routes/pageRoutes.js";
 import contractRoutes from "./routes/api/contractRoutes.js";
+// In your app.js
+import matchingRoutes from "./routes/api/matchingRoutes.js";
+
+// Add this line
+
 
 
 const app = express();
@@ -36,6 +41,7 @@ app.use("/api/system", systemRoutes);
 app.use("/api/communications",communicationRoutes);
 app.use("/api/feedback",feedbackRoutes);
 app.use("/api/contracts", contractRoutes);
+app.use("/api/matching", matchingRoutes);
 
 
 // Page routes (HTML)

@@ -1316,6 +1316,7 @@ function renderNoContract() {
 
 function renderContractTab() {
     const { contract, hasAgreed, agreedAt } = contractState;
+    const user = state.user;
     
     tabContent.innerHTML = `
         <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
@@ -1370,6 +1371,7 @@ function renderContractTab() {
                         <i class="fas fa-check-circle text-2xl mr-3"></i>
                         <div>
                             <p class="font-medium">You have signed this contract</p>
+                            <p class="text-sm text-gray-400">Signed by: <span class="text-white">${user?.fullName || user?.email}</span></p>
                             <p class="text-sm text-gray-400">Signed on ${new Date(agreedAt).toLocaleString()}</p>
                         </div>
                     </div>
@@ -1383,6 +1385,118 @@ function renderContractTab() {
         document.getElementById('contractAgreementForm').addEventListener('submit', handleContractAgreement);
     }
 }
+
+
+// function renderContractTab() {
+//     const { contract, hasAgreed, agreedAt } = contractState;
+//     const user = state.user; // Get the current user from state
+    
+//     // Replace the name placeholder in the contract content
+//     let personalizedContent = contract.content;
+    
+//     // Replace common name placeholder patterns
+//     const namePlaceholders = [
+//         /_{2,}\s*[A-Za-z\s]*_{2,}/g,  // Matches __________ or ______ Name ______
+//         /\[?Student(?:'s)?\s*Name\]?/gi,  // Matches [Student Name], Student's Name, etc.
+//         /\[?Mentor(?:'s)?\s*Name\]?/gi,    // Matches [Mentor Name], Mentor's Name, etc.
+//         /Name:?\s*_{2,}/gi,  // Matches Name: ______
+//         /Signature:?\s*_{2,}/gi,  // Matches Signature: ______
+//         /Date:?\s*_{2,}/gi  // Matches Date: ______
+//     ];
+    
+//     // Replace each pattern
+//     namePlaceholders.forEach(pattern => {
+//         personalizedContent = personalizedContent.replace(pattern, match => {
+//             if (match.toLowerCase().includes('date')) {
+//                 return `Date: ${new Date().toLocaleDateString()}`;
+//             } else if (match.toLowerCase().includes('signature')) {
+//                 return `Signature: _________________________`;
+//             } else {
+//                 // Replace name fields with user's name
+//                 return `${user?.fullName || '_________________________'}`;
+//             }
+//         });
+//     });
+    
+//     // Also handle specific formats from your contracts
+//     personalizedContent = personalizedContent
+//         .replace(/Mentor Name & Surname:?\s*_{2,}/gi, 
+//             `Mentor Name & Surname: ${user?.fullName || '_________________________'}`)
+//         .replace(/Student's Name:?\s*_{2,}/gi, 
+//             `Student's Name: ${user?.fullName || '_________________________'}`);
+    
+//     tabContent.innerHTML = `
+//         <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+//             <!-- Header -->
+//             <div class="p-6 border-b border-gray-700 bg-gray-900/50">
+//                 <div class="flex justify-between items-center">
+//                     <div>
+//                         <h2 class="text-2xl font-bold">${contract.role === 'mentor' ? 'Mentor Agreement' : 'Mentee Agreement'}</h2>
+//                         <p class="text-gray-400 text-sm">Version: ${contract.version}</p>
+//                     </div>
+//                     ${hasAgreed ? `
+//                         <div class="bg-green-900/30 text-green-400 px-4 py-2 rounded-lg flex items-center">
+//                             <i class="fas fa-check-circle mr-2"></i>
+//                             <span>Signed on ${new Date(agreedAt).toLocaleDateString()}</span>
+//                         </div>
+//                     ` : `
+//                         <div class="bg-yellow-900/30 text-yellow-400 px-4 py-2 rounded-lg flex items-center">
+//                             <i class="fas fa-clock mr-2"></i>
+//                             <span>Pending Signature</span>
+//                         </div>
+//                     `}
+//                 </div>
+//             </div>
+
+//             <!-- Contract Content with Personalized Name -->
+//             <div class="p-8 max-h-96 overflow-y-auto bg-gray-900/30">
+//                 <div class="prose prose-invert">
+//                     ${personalizedContent.split('\n').map(p => 
+//                         p.trim() ? `<p class="mb-4 text-gray-300">${p}</p>` : ''
+//                     ).join('')}
+//                 </div>
+//             </div>
+
+//             <!-- Footer with Agreement -->
+//             <div class="p-6 border-t border-gray-700 bg-gray-900/50">
+//                 ${!hasAgreed ? `
+//                     <form id="contractAgreementForm" class="space-y-4">
+//                         <label class="flex items-start space-x-3 cursor-pointer">
+//                             <input type="checkbox" id="agreeCheckbox" class="mt-1 w-5 h-5 text-purple-600 rounded" required>
+//                             <span class="text-gray-300">
+//                                 I, <span class="font-bold text-purple-400">${user?.fullName || '_________________________'}</span>, have read and agree to the terms of this ${contract.role} contract
+//                             </span>
+//                         </label>
+                        
+//                         <div class="bg-gray-900/50 p-3 rounded-lg text-sm text-gray-400">
+//                             <i class="fas fa-info-circle mr-2 text-blue-400"></i>
+//                             By checking this box and clicking "I Agree & Sign Contract", you are electronically signing this agreement. Your signature will be recorded as "${user?.fullName || user?.email}" on ${new Date().toLocaleDateString()}.
+//                         </div>
+                        
+//                         <button type="submit" id="submitContractBtn"
+//                             class="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg font-medium disabled:opacity-50">
+//                             I Agree & Sign Contract
+//                         </button>
+//                     </form>
+//                 ` : `
+//                     <div class="flex items-center text-green-400">
+//                         <i class="fas fa-check-circle text-2xl mr-3"></i>
+//                         <div>
+//                             <p class="font-medium">You have signed this contract</p>
+//                             <p class="text-sm text-gray-400">Signed by: <span class="text-white">${user?.fullName || user?.email}</span></p>
+//                             <p class="text-sm text-gray-400">Signed on ${new Date(agreedAt).toLocaleString()}</p>
+//                         </div>
+//                     </div>
+//                 `}
+//             </div>
+//         </div>
+//     `;
+
+//     // Add form handler if not signed
+//     if (!hasAgreed) {
+//         document.getElementById('contractAgreementForm').addEventListener('submit', handleContractAgreement);
+//     }
+// }
 
 async function handleContractAgreement(e) {
     e.preventDefault();
