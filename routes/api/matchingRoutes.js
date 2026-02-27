@@ -7,7 +7,7 @@ import { requireAdmin } from "../../middleware/adminMiddleware.js";
 const router = express.Router();
 
 // Admin only routes
-router.post("/run", verifyAuthToken, requireAdmin, matchMentorsAndMentees);
-router.get("/stats", verifyAuthToken, requireAdmin, getMatchingStats);
+router.post("/run", verifyAuthToken,  matchMentorsAndMentees);
+router.get("/stats", verifyAuthToken,  getMatchingStats);
 
 export default router;
