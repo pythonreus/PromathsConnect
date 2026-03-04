@@ -1361,7 +1361,7 @@ function renderContractTab() {
                             </span>
                         </label>
                         
-                        <button type="submit" id="submitContractBtn"
+                        <button type="submit" id="submitContractBtn" disabled
                             class="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg font-medium disabled:opacity-50">
                             I Agree & Sign Contract
                         </button>
