@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Non-Signers Management - Promaths Bridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e3a8a 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(124, 58, 237, 0.6);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.3);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #a78bfa, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .role-badge-mentor {
+            background: linear-gradient(135deg, #7c3aed, #3b82f6);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .role-badge-mentee {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .table-header {
+            background: rgba(17, 24, 39, 0.8);
+            color: #9ca3af;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+        .table-row {
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+        }
+        .table-row:hover {
+            background: rgba(124, 58, 237, 0.1);
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slideDown {
+            animation: slideDown 0.3s ease-out;
+        }
+        .search-input {
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-6 lg:p-8">
+    <!-- Fixed Header -->
+    <header class="glass-card rounded-2xl p-4 mb-6 flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 bg-gradient-to-br from-violet-600 to-blue-600 rounded-xl flex items-center justify-center">
+                <img src="../../images/Wits-Promaths-logo.jpeg" alt="Logo" class="w-8 h-8 object-contain rounded-lg">
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-white">Promaths <span class="gradient-text">Bridge</span></h1>
+                <p class="text-sm text-gray-400">Non-Signers Management</p>
+            </div>
+        </div>
+       
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto">
+        <!-- Header Section -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+            <div>
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-users-slash text-red-400"></i>
+                    Non-Signers Management
+                </h2>
+                <p class="text-gray-400 text-sm mt-1">
+                    Track mentors and mentees who haven't signed the contract
+                </p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="glass-card rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Total Non-Signers</p>
+                        <p class="text-2xl font-bold text-white" id="totalNonSigners">0</p>
+                    </div>
+                    <div class="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-users-slash text-red-400"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Mentors</p>
+                        <p class="text-2xl font-bold text-white" id="mentorCount">0</p>
+                    </div>
+                    <div class="w-10 h-10 bg-violet-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chalkboard-teacher text-violet-400"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Mentees</p>
+                        <p class="text-2xl font-bold text-white" id="menteeCount">0</p>
+                    </div>
+                    <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-user-graduate text-green-400"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Completion Rate</p>
+                        <p class="text-2xl font-bold text-white" id="completionRate">0%</p>
+                    </div>
+                    <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-pie text-blue-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="glass-card rounded-xl p-4 mb-6">
+            <div class="flex flex-col md:flex-row gap-4">
+                <!-- Search Input -->
+                <div class="flex-1 relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        placeholder="Search by name or email..." 
+                        class="w-full pl-10 pr-10 py-2.5 search-input rounded-lg text-white placeholder-gray-500 focus:outline-none"
+                    >
+                    <button onclick="clearSearch()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <!-- Role Filter -->
+                <div class="w-full md:w-48">
+                    <select id="roleFilter" class="w-full py-2.5 px-3 search-input rounded-lg text-white focus:outline-none">
+                        <option value="all">All Roles</option>
+                        <option value="mentor">Mentors Only</option>
+                        <option value="mentee">Mentees Only</option>
+                    </select>
+                </div>
+                
+                <!-- Date Filter -->
+                <div class="w-full md:w-48">
+                    <select id="dateFilter" class="w-full py-2.5 px-3 search-input rounded-lg text-white focus:outline-none">
+                        <option value="all">All Time</option>
+                        <option value="7">Last 7 days</option>
+                        <option value="30">Last 30 days</option>
+                        <option value="90">Last 90 days</option>
+                    </select>
+                </div>
+                
+                <!-- Refresh Button -->
+                <button onclick="loadNonSigners()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white flex items-center gap-2">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="hidden sm:inline">Refresh</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="glass-card rounded-xl p-8 text-center hidden">
+            <div class="flex flex-col items-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-violet-400 mb-3"></i>
+                <p class="text-gray-400">Loading non-signers...</p>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="glass-card rounded-xl p-8 text-center hidden">
+            <div class="flex flex-col items-center">
+                <i class="fas fa-exclamation-circle text-4xl text-red-400 mb-3"></i>
+                <p class="text-white font-medium mb-2">Failed to load data</p>
+                <p class="text-gray-400 text-sm mb-4" id="errorMessage">Please try again</p>
+                <button onclick="loadNonSigners()" class="px-4 py-2 bg-violet-600 hover:bg-violet-700 rounded-lg text-white">
+                    Retry
+                </button>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="glass-card rounded-xl p-12 text-center hidden">
+            <div class="flex flex-col items-center">
+                <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-check-circle text-4xl text-green-400"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">All Users Have Signed!</h3>
+                <p class="text-gray-400 max-w-md">
+                    Great news! Every mentor and mentee has already signed the contract. No non-signers to display.
+                </p>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div id="tableContainer" class="glass-card rounded-xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="px-6 py-3 text-left">User</th>
+                            <th class="px-6 py-3 text-left">Role</th>
+                            <th class="px-6 py-3 text-left">Email</th>
+                            <th class="px-6 py-3 text-left">Joined Date</th>
+                            <th class="px-6 py-3 text-left">Days Since Join</th>
+                            <th class="px-6 py-3 text-left">Last Active</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-gray-800">
+                        <!-- Data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="px-6 py-4 flex items-center justify-between border-t border-gray-800">
+                <div class="text-sm text-gray-400">
+                    Showing <span id="showingStart">0</span> to <span id="showingEnd">0</span> of <span id="totalItems">0</span> results
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="previousPage()" id="prevBtn" class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="px-3 py-1 bg-violet-600/20 text-violet-400 rounded-lg" id="currentPage">1</span>
+                    <button onclick="nextPage()" id="nextBtn" class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Toast (keep for basic notifications) -->
+    <div id="successToast" class="fixed bottom-4 right-4 glass-card rounded-lg p-4 hidden animate-slideDown">
+        <div class="flex items-center gap-3">
+            <i class="fas fa-check-circle text-green-400 text-xl"></i>
+            <div>
+                <p class="text-white font-medium" id="toastTitle">Success</p>
+                <p class="text-gray-400 text-sm" id="toastMessage">Action completed successfully</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // State management
+    let allNonSigners = [];
+    let filteredNonSigners = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let searchTimeout;
+    let summaryData = {};
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadNonSigners();
+        setupEventListeners();
+    });
+
+    // Setup event listeners
+    function setupEventListeners() {
+        // Search input with debounce
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                currentPage = 1;
+                loadNonSigners(); // Reload with filters
+            }, 300);
+        });
+
+        // Role filter
+        document.getElementById('roleFilter').addEventListener('change', () => {
+            currentPage = 1;
+            loadNonSigners(); // Reload with filters
+        });
+
+        // Date filter
+        document.getElementById('dateFilter').addEventListener('change', () => {
+            currentPage = 1;
+            loadNonSigners(); // Reload with filters
+        });
+    }
+
+    // Get current filter values
+    function getFilters() {
+        return {
+            search: document.getElementById('searchInput').value || undefined,
+            role: document.getElementById('roleFilter').value !== 'all' ? document.getElementById('roleFilter').value : undefined,
+            daysSinceJoined: document.getElementById('dateFilter').value !== 'all' ? document.getElementById('dateFilter').value : undefined
+        };
+    }
+
+    // Build URL with query parameters
+    function buildUrl() {
+        const filters = getFilters();
+        const params = new URLSearchParams();
+        
+        if (filters.search) params.append('search', filters.search);
+        if (filters.role) params.append('role', filters.role);
+        if (filters.daysSinceJoined) params.append('daysSinceJoined', filters.daysSinceJoined);
+        
+        const queryString = params.toString();
+        return '/api/contracts/admin/non-signers/detailed' + (queryString ? `?${queryString}` : '');
+    }
+
+    // Load non-signers from API
+    async function loadNonSigners() {
+        // Show loading, hide others
+        document.getElementById('loadingState').classList.remove('hidden');
+        document.getElementById('tableContainer').classList.add('hidden');
+        document.getElementById('emptyState').classList.add('hidden');
+        document.getElementById('errorState').classList.add('hidden');
+
+        try {
+            const url = buildUrl();
+            console.log('Fetching from:', url); // For debugging
+            
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Add your auth token
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+
+            const responseData = await response.json();
+            
+            if (responseData.success) {
+                // Extract data from the nested structure
+                const apiData = responseData.data;
+                allNonSigners = apiData.nonSigners || [];
+                summaryData = apiData.summary || {};
+                
+                // Update stats
+                updateStats(apiData);
+                
+                // Apply local filters (though API already filtered, we keep this for any additional client-side filtering)
+                applyFilters();
+            } else {
+                throw new Error(responseData.message || 'Failed to load data');
+            }
+        } catch (error) {
+            console.error('Error loading non-signers:', error);
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+            document.getElementById('errorMessage').textContent = error.message;
+        }
+    }
+
+    // Update statistics cards
+    function updateStats(data) {
+        // Use summary data if available, otherwise calculate
+        const total = data.summary?.total || data.nonSigners?.length || 0;
+        const mentors = data.summary?.mentors || (data.nonSigners?.filter(u => u.role === 'mentor').length || 0);
+        const mentees = data.summary?.mentees || (data.nonSigners?.filter(u => u.role === 'mentee').length || 0);
+        
+        document.getElementById('totalNonSigners').textContent = total;
+        document.getElementById('mentorCount').textContent = mentors;
+        document.getElementById('menteeCount').textContent = mentees;
+        
+        // Calculate completion rate (you might want to get this from a separate API call)
+        // This is a placeholder - you may need to fetch total users count separately
+        const totalUsers = mentors + mentees + 50; // Example calculation
+        const completionRate = totalUsers > 0 ? Math.round(((totalUsers - total) / totalUsers) * 100) : 0;
+        document.getElementById('completionRate').textContent = completionRate + '%';
+        
+        // Update filter display
+        if (data.summary?.filters) {
+            console.log('Applied filters:', data.summary.filters);
+        }
+    }
+
+    // Apply local filters (useful for additional client-side filtering)
+    function applyFilters() {
+        // Since API already filters, we can just use allNonSigners
+        filteredNonSigners = [...allNonSigners];
+
+        // Update total count
+        document.getElementById('totalItems').textContent = filteredNonSigners.length;
+
+        // Check if empty
+        if (filteredNonSigners.length === 0) {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('tableContainer').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+            return;
+        }
+
+        // Show table, hide empty state
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('tableContainer').classList.remove('hidden');
+        document.getElementById('emptyState').classList.add('hidden');
+
+        // Render table
+        renderTable();
+    }
+
+    // Render table with current page data
+    function renderTable() {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, filteredNonSigners.length);
+        const pageData = filteredNonSigners.slice(startIndex, endIndex);
+
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        pageData.forEach((user, index) => {
+            const daysSinceJoin = user.daysSinceJoined || (user.dateJoined 
+                ? Math.floor((new Date() - new Date(user.dateJoined)) / (1000 * 60 * 60 * 24))
+                : 'N/A');
+
+            const row = `
+                <tr class="table-row">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 ${user.role === 'mentor' ? 'bg-violet-600' : 'bg-green-600'} rounded-full flex items-center justify-center">
+                                <span class="text-white text-sm font-bold">
+                                    ${user.fullName ? user.fullName.charAt(0).toUpperCase() : '?'}
+                                </span>
+                            </div>
+                            <span class="text-white font-medium">${user.fullName || 'N/A'}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="${user.role === 'mentor' ? 'role-badge-mentor' : 'role-badge-mentee'}">
+                            ${user.userType || (user.role === 'mentor' ? '👨‍🏫 Mentor' : '👨‍🎓 Mentee')}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-gray-300">${user.email || 'N/A'}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-gray-300">${user.dateJoined ? new Date(user.dateJoined).toLocaleDateString() : 'N/A'}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-gray-300">${daysSinceJoin} days</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-gray-300">${user.lastActive ? new Date(user.lastActive).toLocaleDateString() : 'Never'}</span>
+                    </td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+
+        // Update pagination info
+        document.getElementById('showingStart').textContent = filteredNonSigners.length > 0 ? startIndex + 1 : 0;
+        document.getElementById('showingEnd').textContent = endIndex;
+        document.getElementById('currentPage').textContent = currentPage;
+        
+        // Update pagination buttons
+        document.getElementById('prevBtn').disabled = currentPage === 1;
+        document.getElementById('nextBtn').disabled = endIndex >= filteredNonSigners.length;
+    }
+
+    // Pagination functions
+    function previousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+        }
+    }
+
+    function nextPage() {
+        if (currentPage * itemsPerPage < filteredNonSigners.length) {
+            currentPage++;
+            renderTable();
+        }
+    }
+
+    // Clear search
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('roleFilter').value = 'all';
+        document.getElementById('dateFilter').value = 'all';
+        currentPage = 1;
+        loadNonSigners(); // Reload with cleared filters
+    }
+
+ 
+
+    // Show toast notification (keep for basic feedback)
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('successToast');
+        const title = document.getElementById('toastTitle');
+        const msg = document.getElementById('toastMessage');
+        
+        title.textContent = type === 'success' ? 'Success' : 'Info';
+        msg.textContent = message;
+        
+        toast.classList.remove('hidden');
+        
+        setTimeout(() => {
+            toast.classList.add('hidden');
+        }, 3000);
+    }
+    </script>
+</body>
+</html>

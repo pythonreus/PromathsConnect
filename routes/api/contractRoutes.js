@@ -6,7 +6,8 @@ import {
   getAllContracts,
   getAgreementsByRole,
   createOrUpdateContract,
-  deactivateContract
+  deactivateContract,
+  getNonSignersDetailed
 } from "../../controllers/contractController.js";
 import { verifyAuthToken } from "../../middleware/authMiddleware.js";
 import { requireAdmin } from "../../middleware/adminMiddleware.js";
@@ -23,5 +24,8 @@ router.get("/admin/all", verifyAuthToken, requireAdmin, getAllContracts);
 router.get("/admin/agreements/:role", verifyAuthToken, requireAdmin, getAgreementsByRole);
 router.post("/admin/create", verifyAuthToken, requireAdmin, createOrUpdateContract);
 router.delete("/admin/:role", verifyAuthToken, requireAdmin, deactivateContract);
+
+// Detailed version with more filters
+router.get("/admin/non-signers/detailed", getNonSignersDetailed);
 
 export default router;

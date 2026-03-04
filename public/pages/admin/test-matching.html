@@ -109,13 +109,14 @@
             `;
             
             data.matches.forEach(group => {
+                console.log(group);
                 const maleCount = group.mentees.filter(m => m.gender === 'male').length;
                 const femaleCount = group.mentees.filter(m => m.gender === 'female').length;
                 
                 html += `
                     <div class="mentor-group">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <strong>👤 ${group.mentor.fullName}</strong>
+                            <strong>👤 ${group.mentor.fullName} - ${group.mentor.email} </strong>
                             <span class="faculty-badge">${group.mentor.faculty}</span>
                             <span class="gender-badge ${group.mentor.gender === 'male' ? 'male' : group.mentor.gender === 'female' ? 'female' : 'unspecified'}">
                                 ${group.mentor.gender === 'male' ? '♂' : group.mentor.gender === 'female' ? '♀' : '?'}
@@ -125,7 +126,7 @@
                         <div style="margin-top: 10px;">
                             ${group.mentees.map((mentee, i) => `
                                 <div class="mentee">
-                                    <span>${i+1}. ${mentee.fullName}</span>
+                                    <span>${i+1}. ${mentee.fullName} - ${mentee.email}</span>
                                     <span class="faculty-badge">${mentee.faculty}</span>
                                     <span class="gender-badge ${mentee.gender === 'male' ? 'male' : mentee.gender === 'female' ? 'female' : 'unspecified'}">
                                         ${mentee.gender === 'male' ? '♂' : mentee.gender === 'female' ? '♀' : '?'}

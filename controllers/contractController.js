@@ -178,6 +178,51 @@ export const getAgreementStatus = async (req, res) => {
  * GET /api/contracts/admin/all
  * Get all contracts (admin only)
  */
+// export const getAllContracts = async (req, res) => {
+//   try {
+//     const contracts = await Contract.find().sort({ role: 1 });
+    
+//     // Get agreement counts for each role
+//     const contractsWithStats = await Promise.all(
+//       contracts.map(async (contract) => {
+//         const count = await UserAgreement.countDocuments({ 
+//           role: contract.role,
+//           isAgreed: true 
+//         });
+        
+//         const totalUsers = await User.countDocuments({ 
+//           role: contract.role 
+//         });
+        
+//         return {
+//           ...contract.toObject(),
+//           stats: {
+//             agreed: count,
+//             total: totalUsers,
+//             percentage: totalUsers > 0 ? Math.round((count / totalUsers) * 100) : 0
+//           }
+//         };
+//       })
+//     );
+
+//     res.json({
+//       success: true,
+//       data: contractsWithStats
+//     });
+//   } catch (error) {
+//     console.error("Error in getAllContracts:", error);
+//     res.status(500).json({ 
+//       success: false, 
+//       message: "Server error" 
+//     });
+//   }
+// };
+
+
+
+
+
+//2.0
 export const getAllContracts = async (req, res) => {
   try {
     const contracts = await Contract.find().sort({ role: 1 });
@@ -193,6 +238,24 @@ export const getAllContracts = async (req, res) => {
         const totalUsers = await User.countDocuments({ 
           role: contract.role 
         });
+        
+        // LOG NON-SIGNERS FOR THIS ROLE
+        if (totalUsers > count) {
+          const users = await User.find({ role: contract.role }).select("fullName email");
+          const signers = await UserAgreement.find({ 
+            role: contract.role, 
+            isAgreed: true 
+          }).distinct("user");
+          
+          const nonSigners = users.filter(user => 
+            !signers.some(signerId => signerId.toString() === user._id.toString())
+          );
+          
+          console.log(`\n=== ${contract.role} NON-SIGNERS (${nonSigners.length}/${totalUsers}) ===`);
+          nonSigners.forEach((user, i) => {
+            console.log(`${i+1}. ${user.fullName} - ${user.email}`);
+          });
+        }
         
         return {
           ...contract.toObject(),
@@ -217,6 +280,7 @@ export const getAllContracts = async (req, res) => {
     });
   }
 };
+
 
 /**
  * GET /api/contracts/admin/agreements/:role
@@ -321,6 +385,155 @@ export const deactivateContract = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in deactivateContract:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
+  }
+};
+
+
+
+/**
+ * GET /api/contracts/admin/non-signers/detailed
+ * Get mentors and mentees who haven't signed with advanced filtering
+ * Query params: 
+ *   - search: email or name to search
+ *   - role: filter by 'mentor' or 'mentee' (optional)
+ *   - daysSinceJoined: filter by users joined in last X days (optional)
+ */
+export const getNonSignersDetailed = async (req, res) => {
+  try {
+    const { search, role, daysSinceJoined } = req.query;
+    
+    // Determine which roles to check
+    let rolesToCheck = ['mentor', 'mentee'];
+    if (role && (role === 'mentor' || role === 'mentee')) {
+      rolesToCheck = [role];
+    }
+    
+    // Build date filter if daysSinceJoined is provided
+    let dateFilter = {};
+    if (daysSinceJoined) {
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - parseInt(daysSinceJoined));
+      dateFilter.dateJoined = { $gte: cutoffDate };
+    }
+    
+    let allNonSigners = [];
+    
+    for (const currentRole of rolesToCheck) {
+      // Build user query
+      let userQuery = { 
+        role: currentRole,
+        ...dateFilter
+      };
+      
+      // Add search filter if provided
+      if (search) {
+        userQuery.$or = [
+          { email: { $regex: search, $options: 'i' } },
+          { fullName: { $regex: search, $options: 'i' } }
+        ];
+      }
+      
+      // Get users
+      const users = await User.find(userQuery)
+        .select("_id fullName email dateJoined profile lastActive")
+        .lean();
+      
+      if (users.length === 0) continue;
+      
+      // Get signers
+      const signers = await UserAgreement.find({ 
+        role: currentRole, 
+        isAgreed: true 
+      }).distinct("user");
+      
+      // Filter non-signers
+      const nonSignersForRole = users.filter(user => 
+        !signers.some(signerId => signerId.toString() === user._id.toString())
+      );
+      
+      // Format with additional info
+      const formattedNonSigners = nonSignersForRole.map(user => ({
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: currentRole,
+        userType: currentRole === 'mentor' ? '👨‍🏫 Mentor' : '👨‍🎓 Mentee',
+        dateJoined: user.dateJoined,
+        daysSinceJoined: user.dateJoined 
+          ? Math.floor((new Date() - new Date(user.dateJoined)) / (1000 * 60 * 60 * 24))
+          : null,
+        lastActive: user.lastActive,
+        profile: user.profile || {}
+      }));
+      
+      allNonSigners = [...allNonSigners, ...formattedNonSigners];
+    }
+    
+    // Sort by role then date joined (newest first)
+    allNonSigners.sort((a, b) => {
+      if (a.role === b.role) {
+        return new Date(b.dateJoined) - new Date(a.dateJoined);
+      }
+      return a.role.localeCompare(b.role);
+    });
+    
+    // Calculate statistics
+    const mentorCount = allNonSigners.filter(u => u.role === 'mentor').length;
+    const menteeCount = allNonSigners.filter(u => u.role === 'mentee').length;
+    
+    // Detailed console log
+    console.log("\n" + "=".repeat(60));
+    console.log("📋 NON-SIGNERS DETAILED REPORT");
+    console.log("=".repeat(60));
+    console.log(`Generated: ${new Date().toLocaleString()}`);
+    console.log(`Filters: ${search ? `search="${search}" ` : ''}${role ? `role="${role}" ` : ''}${daysSinceJoined ? `last ${daysSinceJoined} days` : ''}`);
+    console.log("-".repeat(60));
+    console.log(`TOTAL NON-SIGNERS: ${allNonSigners.length}`);
+    console.log(`├─ 👨‍🏫 Mentors: ${mentorCount}`);
+    console.log(`└─ 👨‍🎓 Mentees: ${menteeCount}`);
+    
+    if (allNonSigners.length > 0) {
+      console.log("\n📋 DETAILED LIST:");
+      console.log("-".repeat(60));
+      
+      allNonSigners.forEach((user, index) => {
+        console.log(`${index + 1}. ${user.userType}`);
+        console.log(`   Name: ${user.fullName}`);
+        console.log(`   Email: ${user.email}`);
+        console.log(`   Joined: ${user.dateJoined ? new Date(user.dateJoined).toLocaleDateString() : 'N/A'} (${user.daysSinceJoined || '?'} days ago)`);
+        if (user.lastActive) {
+          console.log(`   Last active: ${new Date(user.lastActive).toLocaleDateString()}`);
+        }
+        console.log("-".repeat(40));
+      });
+    } else {
+      console.log("\n✅ All users have signed the contract!");
+    }
+    console.log("=".repeat(60) + "\n");
+    
+    res.json({
+      success: true,
+      data: {
+        summary: {
+          total: allNonSigners.length,
+          mentors: mentorCount,
+          mentees: menteeCount,
+          filters: {
+            search: search || null,
+            role: role || 'all',
+            daysSinceJoined: daysSinceJoined || null
+          }
+        },
+        nonSigners: allNonSigners
+      }
+    });
+    
+  } catch (error) {
+    console.error("Error in getNonSignersDetailed:", error);
     res.status(500).json({ 
       success: false, 
       message: "Server error" 
